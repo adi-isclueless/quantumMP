@@ -34,7 +34,7 @@ if "current_lab" not in st.session_state:
 
 # Sidebar navigation
 with st.sidebar:
-    st.title("🔬 Quantum Virtual Labs")
+    st.title("Quantum Virtual Labs")
     st.markdown("---")
     
     # User info
@@ -76,16 +76,9 @@ with st.sidebar:
             quiz_passed = has_passed_quiz(lab_id)
             cert_generated = has_certificate(lab_id)
             
-            section_icons = {
-                "Theory": "📚",
-                "Test": "📝",
-                "Simulation": "⚛️",
-                "Certificate": "🏆"
-            }
             
             for section in lab_sections:
-                icon = section_icons.get(section, "•")
-                label = f"{icon} {section}"
+                label = f"{section}"
                 
                 # Add checkmarks for completed sections
                 if section == "Test" and quiz_passed:
@@ -99,7 +92,7 @@ with st.sidebar:
                     st.rerun()
             
             st.markdown("---")
-            if st.button("🏠 Back to Home", use_container_width=True):
+            if st.button("Back to Home", use_container_width=True):
                 st.session_state.current_lab = None
                 st.session_state.current_lab_section = "Theory"
                 st.rerun()
@@ -108,7 +101,7 @@ with st.sidebar:
 # Show home page if navigation is Home or no lab is selected
 if nav_option == "Home":
     # Home page with list of experiments
-    st.title("🔬 Quantum Virtual Labs")
+    st.title("Quantum Virtual Labs")
     st.markdown("**Vivekanand Education Society's Institute of Technology, Mumbai**")
     st.markdown("---")
     
@@ -117,10 +110,10 @@ if nav_option == "Home":
     
     Explore quantum computing concepts through interactive simulations. Each lab follows a structured learning path:
     
-    1. **📚 Theory** - Learn the concepts and principles
-    2. **📝 Test** - Test your knowledge with a quiz
-    3. **⚛️ Simulation** - Hands-on interactive simulation
-    4. **🏆 Certificate** - Get your certificate of completion
+    1. **Theory** - Learn the concepts and principles
+    2. **Test** - Test your knowledge with a quiz
+    3. **Simulation** - Hands-on interactive simulation
+    4. **Certificate** - Get your certificate of completion
     """)
     
     st.markdown("---")
@@ -142,23 +135,28 @@ if nav_option == "Home":
                 quiz_passed = has_passed_quiz(lab_id)
                 cert_generated = has_certificate(lab_id)
                 
-                # Card styling
                 card_html = f"""
                 <div style="
                     border: 2px solid #667eea;
                     border-radius: 10px;
                     padding: 1rem;
                     margin: 0.5rem 0;
-                    background: {'#e8f5e9' if cert_generated else '#fff3e0' if quiz_passed else '#f5f5f5'};
+                    background: var(--secondary-background-color);
+                    color: var(--text-color);
                 ">
-                    <h4>{lab_config['title']}</h4>
-                    <p style="font-size: 0.9rem; color: #666;">{lab_config['description']}</p>
-                    <p style="font-size: 0.8rem; color: #999;">
-                        Difficulty: {lab_config['difficulty']}
-                        {'✅ Completed' if cert_generated else '📝 Quiz Passed' if quiz_passed else '⭕ Not Started'}
+                    <h4 style="color: var(--text-color); margin-top: 0;">{lab_config['title']}</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-color-secondary);">
+                        {lab_config['description']}
+                    </p>
+                    <p style="font-size: 0.8rem; color: var(--text-color-secondary);">
+                        Difficulty: {lab_config['difficulty']} • {
+                            '✅ Completed' if cert_generated else
+                            '✅ Quiz Passed' if quiz_passed else 'Not Started'
+                        }
                     </p>
                 </div>
                 """
+
                 st.markdown(card_html, unsafe_allow_html=True)
                 
                 if st.button(f"Start Lab", key=f"start_{lab_id}", use_container_width=True):
@@ -197,7 +195,7 @@ if nav_option == "Home":
 elif nav_option == "Labs":
     # Check if a lab is selected
     if not st.session_state.current_lab:
-        st.info("👈 Please select a lab from the Home page to begin.")
+        st.info(" Please select a lab from the Home page to begin.")
         if st.button("Go to Home", use_container_width=True):
             st.session_state.current_lab = None
             st.rerun()
@@ -224,7 +222,7 @@ elif nav_option == "Labs":
         section = st.session_state.current_lab_section
         
         if section == "Theory":
-            st.header("📚 Theory")
+            st.header("Theory")
             st.markdown(lab_config["theory"])
             
             # Navigation buttons
@@ -257,7 +255,7 @@ elif nav_option == "Labs":
                     st.rerun()
         
         elif section == "Simulation":
-            st.header("⚛️ Lab Simulation")
+            st.header("Lab Simulation")
             st.markdown("Interactive simulation of the quantum concepts you've learned.")
             
             # Mark simulation as accessed

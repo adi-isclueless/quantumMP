@@ -111,7 +111,7 @@ def init_session_state():
 
 def login_page():
     """Display login page"""
-    st.title("🔐 Quantum Virtual Labs - Login")
+    st.title("Quantum Virtual Labs - Login")
     st.markdown("---")
     
     init_session_state()

@@ -9,138 +9,149 @@ from datetime import datetime
 from lab_config import get_lab
 
 def generate_certificate(lab_name: str, user_name: str = None):
-    """Generate a certificate for completing a lab"""
+    """Generate a premium certificate for completing a lab including VESIT Logo"""
+    from lab_config import get_lab
     lab_config = get_lab(lab_name)
+
     if not lab_config:
-        # Try to find by name
         from lab_config import LABS
         for name, config in LABS.items():
             if config["id"] == lab_name or name == lab_name:
                 lab_config = config
                 break
-    
+
     if not lab_config:
         st.error("Lab not found")
         return None
-    
+
     if user_name is None:
         user_name = st.session_state.get("user_name", "Student")
-    
-    # Create certificate image
-    width, height = 1200, 800
-    image = Image.new('RGB', (width, height), color='white')
+
+    # Canvas size
+    width, height = 1600, 1100
+    image = Image.new('RGB', (width, height), color="#ffffff")
     draw = ImageDraw.Draw(image)
-    
-    # Try to load fonts, fallback to default if not available
+
+    # ----------------------------
+    # Load VESIT Logo
+    # ----------------------------
+    import os
+    logo_path = os.path.join(os.path.dirname(__file__), "vesit_logo.png")
+    try:
+        logo = Image.open(logo_path).convert("RGBA")
+    except Exception as e:
+        st.error(f"Logo file not found: {e}")
+        return None
+
+    # Resize logo
+    original_w, original_h = logo.size
+    logo_width = 240
+    scale_factor = logo_width / original_w
+    logo_height = int(original_h * scale_factor)
+    logo = logo.resize((logo_width, logo_height), Image.LANCZOS)
+
+    # Paste logo at top center
+    logo_x = (width - logo_width) // 2
+    logo_y = 70
+    image.paste(logo, (logo_x, logo_y), logo)
+
+    # ----------------------------
+    # Load Fonts
+    # ----------------------------
     import platform
     try:
         if platform.system() == "Windows":
-            font_paths = [
-                "C:/Windows/Fonts/arial.ttf",
-                "C:/Windows/Fonts/ARIAL.TTF",
-                "arial.ttf"
-            ]
-        elif platform.system() == "Darwin":  # macOS
-            font_paths = [
-                "/Library/Fonts/Arial.ttf",
-                "/System/Library/Fonts/Helvetica.ttc",
-                "arial.ttf"
-            ]
-        else:  # Linux
-            font_paths = [
-                "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-                "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-                "arial.ttf"
-            ]
-        
-        font_file = None
-        for path in font_paths:
-            try:
-                font_file = path
-                ImageFont.truetype(path, 10)  # Test if font exists
-                break
-            except:
-                continue
-        
-        if font_file:
-            title_font = ImageFont.truetype(font_file, 60)
-            name_font = ImageFont.truetype(font_file, 48)
-            text_font = ImageFont.truetype(font_file, 32)
-            date_font = ImageFont.truetype(font_file, 24)
+            font_path = "C:/Windows/Fonts/arial.ttf"
+        elif platform.system() == "Darwin":
+            font_path = "/Library/Fonts/Arial.ttf"
         else:
-            raise Exception("No font found")
+            font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+
+        FONT_BOLD = ImageFont.truetype(font_path, 70)
+        FONT_NAME = ImageFont.truetype(font_path, 60)
+        FONT_TEXT = ImageFont.truetype(font_path, 38)
+        FONT_SMALL = ImageFont.truetype(font_path, 30)
     except:
-        # Use default font if system fonts not available
-        title_font = ImageFont.load_default()
-        name_font = ImageFont.load_default()
-        text_font = ImageFont.load_default()
-        date_font = ImageFont.load_default()
-    
-    # Draw border
-    border_width = 10
-    draw.rectangle([border_width, border_width, width-border_width, height-border_width], 
-                   outline='#667eea', width=border_width)
-    
-    # Draw decorative elements
-    # Top decoration
-    draw.rectangle([width//2 - 200, 50, width//2 + 200, 70], fill='#667eea')
-    
-    # Title
+        FONT_BOLD = ImageFont.load_default()
+        FONT_NAME = ImageFont.load_default()
+        FONT_TEXT = ImageFont.load_default()
+        FONT_SMALL = ImageFont.load_default()
+
+    # ----------------------------
+    # Gold Border
+    # ----------------------------
+    gold1 = (212, 175, 55)
+    gold2 = (255, 215, 100)
+
+    def gradient_line(x1, y1, x2, y2, col1, col2):
+        h = y2 - y1
+        for i in range(h):
+            r = int(col1[0] + i*(col2[0]-col1[0])/h)
+            g = int(col1[1] + i*(col2[1]-col1[1])/h)
+            b = int(col1[2] + i*(col2[2]-col1[2])/h)
+            draw.line([(x1, y1+i), (x2, y1+i)], fill=(r,g,b))
+
+    # Top, bottom, left, right borders
+    gradient_line(30, 30, width-30, 60, gold1, gold2)
+    gradient_line(30, height-60, width-30, height-30, gold2, gold1)
+    gradient_line(30, 60, 60, height-60, gold1, gold2)
+    gradient_line(width-60, 60, width-30, height-60, gold2, gold1)
+
+    # ----------------------------
+    # Dynamic Vertical Spacing
+    # ----------------------------
+    title_y = logo_y + logo_height + 40  # BELOW the logo
+
+    # ----------------------------
+    # Certificate Title
+    # ----------------------------
     title = "Certificate of Completion"
-    title_bbox = draw.textbbox((0, 0), title, font=title_font)
-    title_width = title_bbox[2] - title_bbox[0]
-    draw.text(((width - title_width) // 2, 120), title, fill='#667eea', font=title_font)
-    
+    tw = draw.textlength(title, font=FONT_BOLD)
+    draw.text(((width - tw) // 2, title_y), title, fill="#1a237e", font=FONT_BOLD)
+
+    # Decorative Line
+    draw.line(
+        (width/2 - 260, title_y + 80, width/2 + 260, title_y + 80),
+        fill="#1a237e", width=4
+    )
+
     # Subtitle
     subtitle = "Quantum Virtual Labs"
-    subtitle_bbox = draw.textbbox((0, 0), subtitle, font=text_font)
-    subtitle_width = subtitle_bbox[2] - subtitle_bbox[0]
-    draw.text(((width - subtitle_width) // 2, 200), subtitle, fill='#764ba2', font=text_font)
-    
-    # Certificate text
-    cert_text = f"This is to certify that"
-    text_bbox = draw.textbbox((0, 0), cert_text, font=text_font)
-    text_width = text_bbox[2] - text_bbox[0]
-    draw.text(((width - text_width) // 2, 280), cert_text, fill='black', font=text_font)
-    
-    # User name
-    name_text = user_name
-    name_bbox = draw.textbbox((0, 0), name_text, font=name_font)
-    name_width = name_bbox[2] - name_bbox[0]
-    draw.text(((width - name_width) // 2, 340), name_text, fill='#667eea', font=name_font)
-    
-    # Lab completion text
-    completion_text = f"has successfully completed the lab on"
-    comp_bbox = draw.textbbox((0, 0), completion_text, font=text_font)
-    comp_width = comp_bbox[2] - comp_bbox[0]
-    draw.text(((width - comp_width) // 2, 420), completion_text, fill='black', font=text_font)
-    
-    # Lab name
-    lab_text = f'"{lab_config["title"]}"'
-    lab_bbox = draw.textbbox((0, 0), lab_text, font=text_font)
-    lab_width = lab_bbox[2] - lab_bbox[0]
-    draw.text(((width - lab_width) // 2, 480), lab_text, fill='#764ba2', font=text_font)
-    
+    sw = draw.textlength(subtitle, font=FONT_TEXT)
+    draw.text(((width - sw) // 2, title_y + 130), subtitle, fill="#3949ab", font=FONT_TEXT)
+
+    # Body Text
+    text = "This is to certify that"
+    tw = draw.textlength(text, font=FONT_TEXT)
+    draw.text(((width - tw) // 2, title_y + 210), text, fill="black", font=FONT_TEXT)
+
+    # Student Name
+    nw = draw.textlength(user_name, font=FONT_NAME)
+    draw.text(((width - nw) // 2, title_y + 270), user_name, fill="#1a237e", font=FONT_NAME)
+
+    # Completion Line
+    cl = "has successfully completed the laboratory module:"
+    clw = draw.textlength(cl, font=FONT_TEXT)
+    draw.text(((width - clw) // 2, title_y + 350), cl, fill="black", font=FONT_TEXT)
+
+    # Lab Name
+    lab_text = f"“{lab_config['title']}”"
+    lw = draw.textlength(lab_text, font=FONT_TEXT)
+    draw.text(((width - lw) // 2, title_y + 410), lab_text, fill="#5e35b1", font=FONT_TEXT)
+
     # Date
-    date_text = f"Date: {datetime.now().strftime('%B %d, %Y')}"
-    date_bbox = draw.textbbox((0, 0), date_text, font=date_font)
-    date_width = date_bbox[2] - date_bbox[0]
-    draw.text(((width - date_width) // 2, 580), date_text, fill='gray', font=date_font)
-    
+    date_txt = f"Date: {datetime.now().strftime('%B %d, %Y')}"
+    dw = draw.textlength(date_txt, font=FONT_SMALL)
+    draw.text(((width - dw) // 2, title_y + 490), date_txt, fill="#444", font=FONT_SMALL)
+
     # Institution
-    institution_text = "Vivekanand Education Society's Institute of Technology, Mumbai"
-    inst_bbox = draw.textbbox((0, 0), institution_text, font=date_font)
-    inst_width = inst_bbox[2] - inst_bbox[0]
-    draw.text(((width - inst_width) // 2, 650), institution_text, fill='gray', font=date_font)
-    
-    # Signature line
-    draw.line([width//2 - 150, 720, width//2 + 150, 720], fill='black', width=2)
-    draw.text((width//2 - 50, 730), "Signature", fill='gray', font=date_font)
-    
-    # Bottom decoration
-    draw.rectangle([width//2 - 200, height-70, width//2 + 200, height-50], fill='#667eea')
-    
+    inst = "Vivekanand Education Society's Institute of Technology, Mumbai"
+    iw = draw.textlength(inst, font=FONT_SMALL)
+    draw.text(((width - iw) // 2, title_y + 650), inst, fill="#777", font=FONT_SMALL)
+
     return image
+
+
 
 def render_certificate_page(lab_name: str):
     """Render certificate page for a lab"""
@@ -155,7 +166,7 @@ def render_certificate_page(lab_name: str):
         st.error("Lab not found")
         return
     
-    st.header("🏆 Certificate of Completion")
+    st.header("Certificate of Completion")
     
     # Check if user has completed all requirements
     lab_id = lab_config["id"]
@@ -172,14 +183,14 @@ def render_certificate_page(lab_name: str):
     quiz_passed = has_passed_quiz(lab_id) or quiz_passed
     
     if not quiz_passed:
-        st.warning("⚠️ Please complete and pass the quiz first (score >= 70%)")
+        st.warning("Please complete and pass the quiz first (score >= 70%)")
         if st.button("Go to Quiz", use_container_width=True):
             st.session_state.current_lab_section = "Test"
             st.rerun()
         return
     
     if not simulation_completed:
-        st.info("💡 Complete the simulation to mark this lab as fully completed.")
+        st.info("Complete the simulation to mark this lab as fully completed.")
         # Allow certificate generation even if simulation not completed, but warn
         st.warning("Note: Certificate can be generated after passing the quiz.")
     
@@ -220,7 +231,7 @@ def render_certificate_page(lab_name: str):
                 st.session_state.lab_progress[lab_id]["certificate_generated"] = True
                 st.session_state.lab_progress[lab_id]["certificate_date"] = datetime.now().strftime('%Y-%m-%d')
                 
-                st.success("✅ Certificate generated successfully!")
+                st.success("Certificate generated successfully!")
 
 def has_certificate(lab_id: str):
     """Check if user has generated a certificate for this lab"""
