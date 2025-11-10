@@ -208,7 +208,7 @@ def run():
     # Streamlit UI - COMPLETELY REDESIGNED
     # ----------------------------
     st.set_page_config(
-        page_title="⚛️ QRNG Lab",
+        page_title="QRNG Lab",
         layout="wide",
         initial_sidebar_state="collapsed"
     )
@@ -257,7 +257,7 @@ def run():
     # Header
     st.markdown("""
         <div class="main-header">
-            <h1>⚛️ Quantum Random Number Generator Lab</h1>
+            <h1>Quantum Random Number Generator Lab</h1>
             <p>Harnessing Quantum Superposition for True Randomness</p>
         </div>
     """, unsafe_allow_html=True)
@@ -265,7 +265,7 @@ def run():
     # ----------------------------
     # Main Control Panel (Top Section)
     # ----------------------------
-    st.markdown("## 🎛️ Control Panel")
+    st.markdown("##Control Panel")
 
     # Three columns for controls
     ctrl_col1, ctrl_col2, ctrl_col3 = st.columns([2, 2, 1])
@@ -279,7 +279,7 @@ def run():
             help="More qubits = larger range of random numbers"
         )
         max_possible_value = 2 ** num_qubits - 1
-        st.info(f"📊 **Output Range:** 0 to {max_possible_value} ({2 ** num_qubits} possible values)")
+        st.info(f"**Output Range:** 0 to {max_possible_value} ({2 ** num_qubits} possible values)")
 
     with ctrl_col2:
         st.markdown("<p style='font-size: 1.3rem; font-weight: bold;'>Sample Size</p>", unsafe_allow_html=True)
@@ -291,7 +291,7 @@ def run():
             step=50,
             help="Number of random numbers to generate"
         )
-        st.info(f"🎲 **Generating:** {num_samples:,} random numbers")
+        st.info(f"**Generating:** {num_samples:,} random numbers")
 
     with ctrl_col3:
         st.markdown("<p style='font-size: 1.3rem; font-weight: bold;'>Action</p>", unsafe_allow_html=True)
@@ -299,7 +299,7 @@ def run():
         st.write("")  # Spacing
         generate_button = st.button("🚀 Generate", type="primary", use_container_width=True)
 
-        if st.button("🔄 Reset", use_container_width=True):
+        if st.button("Reset", use_container_width=True):
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
@@ -309,10 +309,10 @@ def run():
     # ----------------------------
     # Quantum Circuit Preview (Tabs)
     # ----------------------------
-    tab1, tab2, tab3, tab4 = st.tabs(["📈 Results", "🔐 Entropy Assessment", "🔬 Circuit Design", "📚 Documentation"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Results", "Entropy Assessment", "Circuit Design", "Documentation"])
 
     with tab2:
-        st.markdown("### 🔐 Entropy Assessment")
+        st.markdown("### Entropy Assessment")
         st.markdown("""
         Entropy assessment measures the level of inherent unpredictability in the raw, unconditioned output of a QRNG.
         This is a fundamental metric that distinguishes QRNGs from classical systems.
@@ -329,7 +329,7 @@ def run():
             rt_monitor = real_time_entropy_monitor(random_numbers, num_qubits_used, block_size=100)
 
             # Display entropy metrics
-            st.markdown("#### 📊 Core Entropy Metrics")
+            st.markdown("#### Core Entropy Metrics")
 
             ent_col1, ent_col2, ent_col3 = st.columns(3)
 
@@ -346,7 +346,7 @@ def run():
                 </div>
                 """, unsafe_allow_html=True)
 
-                with st.expander("ℹ️ About Min-Entropy"):
+                with st.expander("About Min-Entropy"):
                     st.markdown(f"""
                     **Min-Entropy (H∞)** is the most crucial metric for cryptographic applications.
 
@@ -373,7 +373,7 @@ def run():
                 </div>
                 """, unsafe_allow_html=True)
 
-                with st.expander("ℹ️ About Collision Entropy"):
+                with st.expander("About Collision Entropy"):
                     st.markdown(f"""
                     **Collision Entropy (Hc)** measures the probability of getting the same value twice.
 
@@ -400,7 +400,7 @@ def run():
                 </div>
                 """, unsafe_allow_html=True)
 
-                with st.expander("ℹ️ About Shannon Entropy"):
+                with st.expander("About Shannon Entropy"):
                     st.markdown(f"""
                     **Shannon Entropy (H)** is the classical measure of information content.
 
@@ -417,7 +417,7 @@ def run():
             st.divider()
 
             # Real-time monitoring section
-            st.markdown("#### 📡 Real-Time Entropy Monitoring")
+            st.markdown("####Real-Time Entropy Monitoring")
             st.markdown("""
             Advanced QRNGs continuously monitor entropy to detect deviations in the quantum process,
             ensuring high-quality randomness without external noise or manipulation.
@@ -470,7 +470,7 @@ def run():
                     <h3 style="margin: 0;">Consistency Score</h3>
                     <h1 style="margin: 0.5rem 0;">{rt_monitor['consistency_score']:.1f}%</h1>
                     <p style="margin: 0; font-size: 0.9rem;">
-                        {"✅ Excellent" if rt_monitor['consistency_score'] >= 90 else "⚠️ Good" if rt_monitor['consistency_score'] >= 75 else "❌ Needs Attention"}
+                        {"Excellent" if rt_monitor['consistency_score'] >= 90 else "⚠Good" if rt_monitor['consistency_score'] >= 75 else "Needs Attention"}
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -478,21 +478,21 @@ def run():
             st.divider()
 
             # Security Assessment
-            st.markdown("#### 🔒 Cryptographic Security Assessment")
+            st.markdown("#### Cryptographic Security Assessment")
 
             # Determine overall security level
             min_quality = min_entropy['quality_percentage']
             if min_quality >= 95:
-                security_level = "🟢 EXCELLENT - Suitable for cryptographic key generation"
+                security_level = "EXCELLENT - Suitable for cryptographic key generation"
                 security_color = "#27ae60"
             elif min_quality >= 85:
-                security_level = "🟡 GOOD - Suitable for most applications with conditioning"
+                security_level = "GOOD - Suitable for most applications with conditioning"
                 security_color = "#f39c12"
             elif min_quality >= 70:
-                security_level = "🟠 FAIR - Requires post-processing before cryptographic use"
+                security_level = "FAIR - Requires post-processing before cryptographic use"
                 security_color = "#e67e22"
             else:
-                security_level = "🔴 LOW - Not recommended for cryptographic applications"
+                security_level = "LOW - Not recommended for cryptographic applications"
                 security_color = "#e74c3c"
 
             st.markdown(f"""
@@ -503,25 +503,25 @@ def run():
             """, unsafe_allow_html=True)
 
             # Recommendations
-            st.markdown("#### 💡 Recommendations")
+            st.markdown("#### Recommendations")
 
             if min_quality >= 95:
                 st.success("""
-                ✅ Your QRNG output has excellent entropy properties:
+                Your QRNG output has excellent entropy properties:
                 - Min-entropy is very high, indicating strong unpredictability
                 - Consistency across blocks is good
                 - Suitable for direct use in cryptographic applications
                 """)
             elif min_quality >= 85:
                 st.info("""
-                ℹ️ Your QRNG output has good entropy properties:
+                Your QRNG output has good entropy properties:
                 - Consider using randomness extraction (e.g., hash functions) for critical applications
                 - Monitor entropy continuously in production environments
                 - Suitable for most non-critical cryptographic uses
                 """)
             else:
                 st.warning("""
-                ⚠️ Your QRNG output could be improved:
+                Your QRNG output could be improved:
                 - Use randomness extractors or post-processing algorithms
                 - Increase sample size for better statistical properties
                 - Consider checking quantum circuit noise and decoherence
@@ -529,7 +529,7 @@ def run():
                 """)
 
         else:
-            st.info("👈 Generate random numbers first to see entropy analysis!")
+            st.info("Generate random numbers first to see entropy analysis!")
 
     with tab3:
         st.markdown("### Quantum Circuit Architecture")
@@ -555,7 +555,7 @@ def run():
 
     with tab4:
         st.markdown("""
-        ### 🌟 About Quantum Random Number Generation
+        ### About Quantum Random Number Generation
 
         **Quantum Advantage:**
         - Classical RNGs use algorithms (pseudo-random)
@@ -589,12 +589,12 @@ def run():
             num_qubits_used = st.session_state['num_qubits']
             num_samples_used = st.session_state['num_samples']
 
-            st.success(f"✅ Successfully generated {len(random_numbers):,} quantum random numbers!")
+            st.success(f" Successfully generated {len(random_numbers):,} quantum random numbers!")
 
             # ----------------------------
             # Key Metrics Dashboard
             # ----------------------------
-            st.markdown("## 📊 Statistical Dashboard")
+            st.markdown("## Statistical Dashboard")
 
             stats_dict = calculate_statistics(random_numbers, num_qubits_used)
             chi_stat, p_value = chi_square_test(random_numbers, num_qubits_used)
@@ -639,7 +639,7 @@ def run():
                 """, unsafe_allow_html=True)
 
             with m5:
-                uniformity_status = "✅ Uniform" if p_value > 0.05 else "⚠️ Non-uniform"
+                uniformity_status = "Uniform" if p_value > 0.05 else "Non-uniform"
                 color = "#667eea" if p_value > 0.05 else "#f39c12"
                 st.markdown(f"""
                 <div class="stat-card">
@@ -654,7 +654,7 @@ def run():
             # ----------------------------
             # Visualization Section
             # ----------------------------
-            st.markdown("## 📈 Distribution Visualizations")
+            st.markdown("## Distribution Visualizations")
 
             viz_col1, viz_col2 = st.columns(2)
 
@@ -711,14 +711,14 @@ def run():
             # ----------------------------
             # Data Export Section
             # ----------------------------
-            st.markdown("## 💾 Export & Data Preview")
+            st.markdown("## Export & Data Preview")
 
             export_col1, export_col2, export_col3 = st.columns([2, 2, 3])
 
             with export_col1:
                 data_string = "\n".join(map(str, random_numbers))
                 st.download_button(
-                    label="📄 Download TXT",
+                    label="Download TXT",
                     data=data_string,
                     file_name=f"qrng_{num_qubits_used}qubits_{num_samples_used}samples.txt",
                     mime="text/plain",
@@ -728,7 +728,7 @@ def run():
             with export_col2:
                 csv_data = "index,value\n" + "\n".join([f"{i},{val}" for i, val in enumerate(random_numbers)])
                 st.download_button(
-                    label="📊 Download CSV",
+                    label="Download CSV",
                     data=csv_data,
                     file_name=f"qrng_{num_qubits_used}qubits_{num_samples_used}samples.csv",
                     mime="text/csv",
@@ -738,7 +738,7 @@ def run():
             with export_col3:
                 # Sample preview with selection
                 preview_size = st.slider("Preview sample size:", 10, 200, 50, 10)
-                with st.expander(f"🔍 Preview first {preview_size} values", expanded=False):
+                with st.expander(f"Preview first {preview_size} values", expanded=False):
                     preview_data = random_numbers[:preview_size]
                     # Display as columns for better readability
                     cols_per_row = 10
@@ -749,7 +749,7 @@ def run():
             # Empty state with call-to-action
             st.markdown("""
             <div style='text-align: center; padding: 4rem 2rem; background: #f8f9fa; border-radius: 10px;'>
-                <h2>🚀 Ready to Generate Quantum Random Numbers?</h2>
+                <h2>Ready to Generate Quantum Random Numbers?</h2>
                 <p style='font-size: 1.2rem; color: #6c757d;'>
                     Configure your parameters above and click the <strong>Generate</strong> button to start!
                 </p>
@@ -760,6 +760,6 @@ def run():
     st.divider()
     st.markdown("""
     <div style='text-align: center; color: #6c757d; padding: 1rem;'>
-        <small>⚛️ Powered by Qiskit & Quantum Mechanics | Built with Streamlit</small>
+        <small>Powered by Qiskit & Quantum Mechanics | Built with Streamlit</small>
     </div>
     """, unsafe_allow_html=True)

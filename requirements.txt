@@ -7,3 +7,4 @@ pandas~=2.3.3
 pylatexenc
 scipy~=1.15.3
 plotly~=6.4.0
+Pillow~=10.0.0

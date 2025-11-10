@@ -1,0 +1,12 @@
+{
+  "admin": {
+    "password": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "name": "Admin User",
+    "email": "admin@vesit.ac.in"
+  },
+  "Aditya": {
+    "password": "265719f4e7ee032fe4a0c5ed5735a0530545e4f35c8648155dc5450330327e2a",
+    "name": "AdityaUpasani",
+    "email": ""
+  }
+}

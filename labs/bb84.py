@@ -20,13 +20,11 @@ def run():
         .main-header {
             font-size: 3rem;
             color: #667eea;
-            text-align: center;
             margin-bottom: 1rem;
         }
         .sub-header {
             font-size: 1.5rem;
             color: #764ba2;
-            text-align: center;
             margin-bottom: 2rem;
         }
         .metric-card {
@@ -383,26 +381,26 @@ def run():
         ax5 = fig.add_subplot(gs[2, 1])
         ax5.axis('off')
 
-        stats_text = f"""📊 DETECTION STATISTICS
+        stats_text = f"""DETECTION STATISTICS
 
-    🔴 Eve Intercepted: {result['eve_stats']['interceptions']} qubits 
+       Eve Intercepted: {result['eve_stats']['interceptions']} qubits 
        ({result['eve_stats']['intercept_rate'] * 100:.1f}%)
 
-    📏 Initial Bits: {result['initial_bits']}
-    📐 Sifted Bits: {result['sifted_bits']}
-    🔑 Final Key Length: {result['final_key_length']}
+       Initial Bits: {result['initial_bits']}
+       Sifted Bits: {result['sifted_bits']}
+       Final Key Length: {result['final_key_length']}
 
-    ❌ Errors Detected: {result['errors']} in {result['test_bits']} test bits
-    📈 QBER: {result['qber'] * 100:.2f}%
+       Errors Detected: {result['errors']} in {result['test_bits']} test bits
+       QBER: {result['qber'] * 100:.2f}%
 
-    {'✅ Protocol SECURE' if result['secure'] else '⚠️ Protocol INSECURE'}
+    {'Protocol SECURE' if result['secure'] else 'Protocol INSECURE'}
     {'No eavesdropping detected' if result['secure'] else 'Eavesdropping detected!'}"""
 
         ax5.text(0.5, 0.5, stats_text, ha='center', va='center',
                  fontsize=10, family='monospace',
                  bbox=dict(boxstyle='round,pad=1', facecolor='lightgray', alpha=0.8))
 
-        fig.suptitle('🕵️ Eve Eavesdropping Analysis - BB84 Protocol',
+        fig.suptitle(' Eve Eavesdropping Analysis - BB84 Protocol',
                      fontsize=16, fontweight='bold')
 
         plt.tight_layout()
@@ -472,7 +470,7 @@ def run():
 
     # Main Application
     def main():
-        st.markdown('<h1 class="main-header">🔐 BB84 Quantum Key Distribution</h1>', unsafe_allow_html=True)
+        st.markdown('<h1 class="main-header">BB84 Quantum Key Distribution</h1>', unsafe_allow_html=True)
         st.markdown('<p class="sub-header">Interactive Quantum Cryptography Protocol Simulator</p>',
                     unsafe_allow_html=True)
         st.markdown(
@@ -480,7 +478,7 @@ def run():
 
         # Create tabs
         tab1, tab2, tab3, tab4 = st.tabs(
-            ["🎯 Single Protocol Run", "🕵️ Eve Eavesdropping", "📊 Performance Analysis", "📚 Learn BB84"])
+            ["Single Protocol Run", "Eve Eavesdropping", "Performance Analysis", "Learn BB84"])
 
         # Tab 1: Single Protocol Run
         with tab1:
@@ -496,7 +494,7 @@ def run():
                 noise_single = st.slider("Channel Noise (%)", 0.0, 30.0, 5.0, 0.5,
                                          help="Probability of errors in quantum channel")
 
-                run_single = st.button("🚀 Run Protocol", type="primary", use_container_width=True)
+                run_single = st.button("Run Protocol", type="primary", use_container_width=True)
 
             with col2:
                 if run_single:
@@ -519,14 +517,13 @@ def run():
                         with metric_cols[2]:
                             st.metric("Final Key Length", result['final_key_length'])
                         with metric_cols[3]:
-                            qber_color = "🟢" if result['secure'] else "🔴"
-                            st.metric("QBER", f"{result['qber'] * 100:.2f}% {qber_color}")
+                            st.metric("QBER", f"{result['qber'] * 100:.2f}% ")
 
                         # Security status
                         if result['secure']:
-                            st.success("✅ **SECURE** - No eavesdropping detected!")
+                            st.success("**SECURE** - No eavesdropping detected!")
                         else:
-                            st.error("⚠️ **INSECURE** - Possible eavesdropping detected!")
+                            st.error("**INSECURE** - Possible eavesdropping detected!")
 
                         # Display visualizations
                         st.markdown("#### Protocol Flow")
@@ -546,11 +543,11 @@ def run():
                             st.warning("No final key generated. Try running with less noise.")
 
                         # Detailed stats
-                        with st.expander("📊 Detailed Statistics"):
+                        with st.expander("Detailed Statistics"):
                             st.write(f"**Sifting Efficiency:** {result['sifting_efficiency'] * 100:.1f}%")
                             st.write(f"**Errors Found:** {result['errors']} in {result['test_bits']} test bits")
                             st.write(f"**Security Threshold:** 11%")
-                            st.write(f"**Keys Match:** {'Yes ✅' if result['keys_match'] else 'No ❌'}")
+                            st.write(f"**Keys Match:** {'Yes' if result['keys_match'] else 'No'}")
 
         # Tab 2: Eve Eavesdropping
         with tab2:
@@ -569,7 +566,7 @@ def run():
                                      help="Percentage of qubits Eve intercepts", key="eve_prob")
 
                 st.markdown("""
-                #### 🎯 What Eve Does:
+                #### What Eve Does:
                 1. Intercepts qubits from Alice
                 2. Measures them (random basis)
                 3. Resends to Bob (disturbed states)
@@ -577,7 +574,7 @@ def run():
                 **Expected:** Higher interception → Higher QBER → Detection!
                 """)
 
-                run_eve = st.button("🚀 Run with Eve", type="primary", use_container_width=True, key="run_eve")
+                run_eve = st.button("Run with Eve", type="primary", use_container_width=True, key="run_eve")
 
             with col2:
                 if run_eve:
@@ -601,18 +598,17 @@ def run():
                         with metric_cols[2]:
                             st.metric("Final Key Length", result['final_key_length'])
                         with metric_cols[3]:
-                            qber_color = "🟢" if result['secure'] else "🔴"
-                            st.metric("QBER", f"{result['qber'] * 100:.2f}% {qber_color}")
+                            st.metric("QBER", f"{result['qber'] * 100:.2f}%")
 
                         # Security status
                         if result['secure']:
-                            st.warning("⚠️ Eve was NOT detected! (QBER below threshold)")
+                            st.warning("Eve was NOT detected! (QBER below threshold)")
                             st.info(
-                                f"💡 Even though Eve intercepted {result['eve_stats']['intercept_rate'] * 100:.1f}% of qubits, the error rate is still below 11%. This shows that quantum mechanics doesn't guarantee detection of every attack - statistical fluctuations matter!")
+                                f"Even though Eve intercepted {result['eve_stats']['intercept_rate'] * 100:.1f}% of qubits, the error rate is still below 11%. This shows that quantum mechanics doesn't guarantee detection of every attack - statistical fluctuations matter!")
                         else:
-                            st.error("🚨 Eve was DETECTED! (QBER above threshold)")
+                            st.error("Eve was DETECTED! (QBER above threshold)")
                             st.success(
-                                f"💡 Eve's {result['eve_stats']['intercept_rate'] * 100:.1f}% interception rate caused enough disturbance to raise the QBER above 11%. This is the quantum advantage - any measurement leaves a detectable trace!")
+                                f"Eve's {result['eve_stats']['intercept_rate'] * 100:.1f}% interception rate caused enough disturbance to raise the QBER above 11%. This is the quantum advantage - any measurement leaves a detectable trace!")
 
                         # Display visualizations
                         st.markdown("#### Eve Eavesdropping Analysis")
@@ -627,7 +623,7 @@ def run():
                             st.warning("No final key generated. Too many errors detected.")
 
                         # Detailed stats
-                        with st.expander("📊 Detailed Statistics"):
+                        with st.expander("Detailed Statistics"):
                             st.write(f"**Initial Bits Sent:** {result['initial_bits']}")
                             st.write(f"**After Sifting:** {result['sifted_bits']} bits")
                             st.write(f"**Final Key Length:** {result['final_key_length']} bits")
@@ -650,7 +646,7 @@ def run():
                 noise_max = st.slider("Maximum Noise (%)", 5.0, 30.0, 20.0, 0.5, key="perf_max")
                 noise_steps = st.slider("Number of Noise Steps", 5, 15, 8, 1, key="perf_steps")
 
-                analyze_btn = st.button("🔬 Analyze Performance", type="primary", use_container_width=True)
+                analyze_btn = st.button("Analyze Performance", type="primary", use_container_width=True)
 
             with col2:
                 if analyze_btn:
@@ -719,20 +715,20 @@ def run():
                         st.pyplot(perf_fig)
 
                         # Key findings
-                        st.markdown("#### 🔍 Key Findings")
+                        st.markdown("#### Key Findings")
                         st.write(f"✓ Sifting reduces key by ~50% (random basis matching)")
                         st.write(f"✓ QBER increases with channel noise")
                         st.write(f"✓ BB84 detects eavesdropping through elevated QBER")
                         st.write(f"✓ Protocol is secure when QBER < 11%")
 
                         # Raw data
-                        with st.expander("📋 View Raw Data"):
+                        with st.expander("View Raw Data"):
                             st.dataframe(results_df, use_container_width=True)
 
                             # Download option
                             csv = results_df.to_csv(index=False)
                             st.download_button(
-                                label="📥 Download Results as CSV",
+                                label="Download Results as CSV",
                                 data=csv,
                                 file_name="bb84_performance_analysis.csv",
                                 mime="text/csv"
@@ -742,7 +738,7 @@ def run():
         with tab4:
             st.markdown("## Learn About BB84 Quantum Key Distribution")
 
-            with st.expander("🎯 What is BB84?", expanded=True):
+            with st.expander("What is BB84?", expanded=True):
                 st.markdown("""
                 ### Overview
 
@@ -751,16 +747,16 @@ def run():
                 a shared secret key using quantum mechanics, with guaranteed detection of eavesdropping.
 
                 **Key Features:**
-                - 🔐 **Unconditional Security**: Based on quantum mechanics laws
-                - 🕵️ **Eavesdropping Detection**: Any interception disturbs quantum states
-                - 🔑 **Shared Key Generation**: Creates identical secret keys for Alice and Bob
-                - ⚛️ **Quantum Foundation**: Uses quantum superposition and measurement
+                - **Unconditional Security**: Based on quantum mechanics laws
+                - **Eavesdropping Detection**: Any interception disturbs quantum states
+                - **Shared Key Generation**: Creates identical secret keys for Alice and Bob
+                - **Quantum Foundation**: Uses quantum superposition and measurement
 
                 > **Quantum Advantage**: Unlike classical cryptography based on computational complexity, 
                 > BB84's security comes from the laws of physics!
                 """)
 
-            with st.expander("🔧 How It Works"):
+            with st.expander("How It Works"):
                 st.markdown("""
                 ### The Protocol Steps
 
@@ -791,7 +787,7 @@ def run():
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/BB84_protocol.svg/800px-BB84_protocol.svg.png",
                     caption="BB84 Protocol Flow", use_container_width=True)
 
-            with st.expander("🔒 Security Principles"):
+            with st.expander("Security Principles"):
                 st.markdown("""
                 ### Why is BB84 Secure?
 
@@ -809,8 +805,8 @@ def run():
                 - This introduces errors that Alice and Bob detect through QBER
 
                 **Security Threshold:**
-                - QBER < 11%: Channel is secure ✅
-                - QBER ≥ 11%: Possible eavesdropping ⚠️
+                - QBER < 11%: Channel is secure 
+                - QBER ≥ 11%: Possible eavesdropping 
 
                 > ⚠️ **Important**: BB84 doesn't prevent eavesdropping—it detects it!
                 > If QBER is high, Alice and Bob abort and try again.
@@ -826,19 +822,19 @@ def run():
                     bob_basis = st.selectbox("Bob's Basis", ["Z", "X"], key="learn_bob_basis")
                 with col3:
                     if alice_basis == bob_basis:
-                        st.success(f"✅ Bases Match!\nBob measures: {alice_bit}")
+                        st.success(f"Bases Match!\nBob measures: {alice_bit}")
                     else:
-                        st.warning(f"❌ Bases Don't Match\nBob measures: Random (50/50)")
+                        st.warning(f"Bases Don't Match\nBob measures: Random (50/50)")
 
-            with st.expander("💡 Real-World Applications"):
+            with st.expander("Real-World Applications"):
                 st.markdown("""
                 ### Current Deployments
 
                 **Industries:**
-                - 🏦 **Banking**: Secure inter-bank communications
-                - 🏛️ **Government**: Secure government communications
-                - 🔬 **Research**: Quantum networks and quantum internet
-                - 💼 **Enterprise**: High-security data centers
+                - **Banking**: Secure inter-bank communications
+                - **Government**: Secure government communications
+                - **Research**: Quantum networks and quantum internet
+                - **Enterprise**: High-security data centers
 
                 **Commercial Systems:**
                 - ID Quantique (Switzerland)
@@ -857,7 +853,7 @@ def run():
                 - Quantum internet infrastructure
                 """)
 
-            with st.expander("📖 Additional Resources"):
+            with st.expander("Additional Resources"):
                 st.markdown("""
                 ### Learn More
 
@@ -883,7 +879,7 @@ def run():
         # Footer
         st.markdown("---")
         st.markdown("""
-        ### 📖 About This Simulator
+        ### About This Simulator
         This interactive dashboard demonstrates the BB84 quantum key distribution protocol using Qiskit.
         It simulates quantum state preparation, transmission, measurement, and key distribution with realistic noise models.
         The Eve eavesdropping simulation shows how quantum mechanics provides information-theoretic security.
