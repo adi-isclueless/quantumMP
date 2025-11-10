@@ -44,22 +44,8 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # Navigation - default to Labs if in a lab, otherwise Home
-    default_nav_index = 1 if st.session_state.current_lab else 0
-    nav_option = st.radio(
-        "Navigation",
-        ["Home", "Labs"],
-        index=default_nav_index
-    )
-    
-    # If user switches to Home while in a lab, clear current lab
-    if nav_option == "Home" and st.session_state.current_lab:
-        st.session_state.current_lab = None
-        st.session_state.current_lab_section = "Theory"
-        st.rerun()
-    
     # If in a lab, show lab-specific navigation
-    if st.session_state.current_lab and nav_option == "Labs":
+    if st.session_state.current_lab:
         st.markdown("### Lab Sections")
         lab_sections = ["Theory", "Test", "Simulation", "Certificate"]
         
@@ -92,14 +78,14 @@ with st.sidebar:
                     st.rerun()
             
             st.markdown("---")
-            if st.button("Back to Home", use_container_width=True):
+            if st.button("← Back to Home", use_container_width=True):
                 st.session_state.current_lab = None
                 st.session_state.current_lab_section = "Theory"
                 st.rerun()
 
 # Main content area
-# Show home page if navigation is Home or no lab is selected
-if nav_option == "Home":
+# Show home page if no lab is selected
+if not st.session_state.current_lab:
     # Home page with list of experiments
     st.title("Quantum Virtual Labs")
     st.markdown("**Vivekanand Education Society's Institute of Technology, Mumbai**")
@@ -189,119 +175,126 @@ if nav_option == "Home":
         > "To create a unified, accessible platform that enables students and educators to
         explore quantum phenomena through simulation, experimentation, and visualization."
 
+        ---
+
+        #### Credits  
+        **Mentor:**  
+        Dr. *Ranjan Bala Jain*, Department of Electronics and Telecommunication (EXTC)
+
+        **Developed by Students:**  
+        - *Aditya Upasani* — Computer Engineering (CMPN)  
+        - *Abhishek Vishwakarma* — Information Technology (IT)  
+        - *Yash Mahajan* — Computer Engineering (CMPN)  
+        - *Ryan D'Souza* — Computer Engineering (CMPN)
+
+        ---
+
         © 2025 Quantum Virtual Labs • Developed at VESIT
         """)
 
-elif nav_option == "Labs":
-    # Check if a lab is selected
-    if not st.session_state.current_lab:
-        st.info(" Please select a lab from the Home page to begin.")
-        if st.button("Go to Home", use_container_width=True):
-            st.session_state.current_lab = None
-            st.rerun()
-    else:
-        # Lab page
-        lab_config = None
-        for lab_name, config in LABS.items():
-            if config["id"] == st.session_state.current_lab:
-                lab_config = config
-                break
+else:
+    # Lab page
+    lab_config = None
+    for lab_name, config in LABS.items():
+        if config["id"] == st.session_state.current_lab:
+            lab_config = config
+            break
+    
+    if not lab_config:
+        st.error("Lab not found. Returning to home.")
+        st.session_state.current_lab = None
+        st.session_state.current_lab_section = "Theory"
+        st.rerun()
+    
+    # Display lab title
+    st.title(lab_config["title"])
+    st.markdown(f"**Category:** {lab_config['category']} | **Difficulty:** {lab_config['difficulty']}")
+    st.markdown("---")
+    
+    # Render appropriate section
+    section = st.session_state.current_lab_section
+    
+    if section == "Theory":
+        st.header("Theory")
+        st.markdown(lab_config["theory"])
         
-        if not lab_config:
-            st.error("Lab not found. Returning to home.")
-            st.session_state.current_lab = None
-            st.session_state.current_lab_section = "Theory"
-            st.rerun()
+        # Navigation buttons
+        col1, col2 = st.columns([1, 4])
+        with col1:
+            if st.button("Next: Test Your Knowledge →", type="primary", use_container_width=True):
+                st.session_state.current_lab_section = "Test"
+                st.rerun()
+    
+    elif section == "Test":
+        render_quiz(lab_config["id"])
         
-        # Display lab title
-        st.title(lab_config["title"])
-        st.markdown(f"**Category:** {lab_config['category']} | **Difficulty:** {lab_config['difficulty']}")
-        st.markdown("---")
+        # Check if quiz passed, then enable simulation
+        lab_id = lab_config["id"]
+        quiz_passed = has_passed_quiz(lab_id)
         
-        # Render appropriate section
-        section = st.session_state.current_lab_section
-        
-        if section == "Theory":
-            st.header("Theory")
-            st.markdown(lab_config["theory"])
-            
-            # Navigation buttons
-            col1, col2 = st.columns([1, 4])
+        if quiz_passed:
+            col1, col2 = st.columns([1, 1])
             with col1:
-                if st.button("Next: Test Your Knowledge →", type="primary", use_container_width=True):
-                    st.session_state.current_lab_section = "Test"
-                    st.rerun()
-        
-        elif section == "Test":
-            render_quiz(lab_config["id"])
-            
-            # Check if quiz passed, then enable simulation
-            lab_id = lab_config["id"]
-            quiz_passed = has_passed_quiz(lab_id)
-            
-            if quiz_passed:
-                col1, col2 = st.columns([1, 1])
-                with col1:
-                    if st.button("← Back to Theory", use_container_width=True):
-                        st.session_state.current_lab_section = "Theory"
-                        st.rerun()
-                with col2:
-                    if st.button("Next: Simulation →", type="primary", use_container_width=True):
-                        st.session_state.current_lab_section = "Simulation"
-                        st.rerun()
-            else:
                 if st.button("← Back to Theory", use_container_width=True):
                     st.session_state.current_lab_section = "Theory"
                     st.rerun()
-        
-        elif section == "Simulation":
-            st.header("Lab Simulation")
-            st.markdown("Interactive simulation of the quantum concepts you've learned.")
-            
-            # Mark simulation as accessed
-            if "lab_progress" not in st.session_state:
-                st.session_state.lab_progress = {}
-            if lab_config["id"] not in st.session_state.lab_progress:
-                st.session_state.lab_progress[lab_config["id"]] = {}
-            st.session_state.lab_progress[lab_config["id"]]["simulation_accessed"] = True
-            
-            # Import and run the lab simulation
-            try:
-                module_name = f"labs.{lab_config['module']}"
-                lab_module = importlib.import_module(module_name)
-                
-                if hasattr(lab_module, 'run'):
-                    # Run the simulation
-                    lab_module.run()
-                    
-                    # Mark simulation as completed
-                    st.session_state.lab_progress[lab_config["id"]]["simulation_completed"] = True
-                else:
-                    st.error("Lab simulation module not found or doesn't have a run() function")
-            except Exception as e:
-                st.error(f"Error loading lab simulation: {str(e)}")
-                st.info("The simulation module may need to be updated for the new structure.")
-            
-            # Navigation buttons
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                if st.button("← Back to Test", use_container_width=True):
-                    st.session_state.current_lab_section = "Test"
-                    st.rerun()
             with col2:
-                lab_id = lab_config["id"]
-                quiz_passed = has_passed_quiz(lab_id)
-                if quiz_passed:
-                    if st.button("Next: Certificate →", type="primary", use_container_width=True):
-                        st.session_state.current_lab_section = "Certificate"
-                        st.rerun()
-                else:
-                    st.info("Complete and pass the quiz to unlock the certificate")
-        
-        elif section == "Certificate":
-            render_certificate_page(lab_config["id"])
-            
-            # Navigation button
-            if st.button("← Back to Simulation", use_container_width=True):
-                st.session_state.current_lab_section = "Simulation"
+                if st.button("Next: Simulation →", type="primary", use_container_width=True):
+                    st.session_state.current_lab_section = "Simulation"
+                    st.rerun()
+        else:
+            if st.button("← Back to Theory", use_container_width=True):
+                st.session_state.current_lab_section = "Theory"
                 st.rerun()
+    
+    elif section == "Simulation":
+        st.header("Lab Simulation")
+        st.markdown("Interactive simulation of the quantum concepts you've learned.")
+        
+        # Mark simulation as accessed
+        if "lab_progress" not in st.session_state:
+            st.session_state.lab_progress = {}
+        if lab_config["id"] not in st.session_state.lab_progress:
+            st.session_state.lab_progress[lab_config["id"]] = {}
+        st.session_state.lab_progress[lab_config["id"]]["simulation_accessed"] = True
+        
+        # Import and run the lab simulation
+        try:
+            module_name = f"labs.{lab_config['module']}"
+            lab_module = importlib.import_module(module_name)
+            
+            if hasattr(lab_module, 'run'):
+                # Run the simulation
+                lab_module.run()
+                
+                # Mark simulation as completed
+                st.session_state.lab_progress[lab_config["id"]]["simulation_completed"] = True
+            else:
+                st.error("Lab simulation module not found or doesn't have a run() function")
+        except Exception as e:
+            st.error(f"Error loading lab simulation: {str(e)}")
+            st.info("The simulation module may need to be updated for the new structure.")
+        
+        # Navigation buttons
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            if st.button("← Back to Test", use_container_width=True):
+                st.session_state.current_lab_section = "Test"
+                st.rerun()
+        with col2:
+            lab_id = lab_config["id"]
+            quiz_passed = has_passed_quiz(lab_id)
+            if quiz_passed:
+                if st.button("Next: Certificate →", type="primary", use_container_width=True):
+                    st.session_state.current_lab_section = "Certificate"
+                    st.rerun()
+            else:
+                st.info("Complete and pass the quiz to unlock the certificate")
+    
+    elif section == "Certificate":
+        render_certificate_page(lab_config["id"])
+        
+        # Navigation button
+        if st.button("← Back to Simulation", use_container_width=True):
+            st.session_state.current_lab_section = "Simulation"
+            st.rerun()
