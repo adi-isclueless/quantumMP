@@ -313,12 +313,27 @@ def run():
             'eve_result': eve_result
         }
     
+    import io
+    import base64
+
     def run_animation(step_data, placeholder):
-        """Run the animation for one transmission"""
+        frames = []
         for frame in range(31):
-            img = create_animation_frame(step_data, frame)
-            placeholder.image(img, use_container_width=True)
-            time.sleep(0.03)
+            frames.append(create_animation_frame(step_data, frame))
+
+        # Save frames to in-memory GIF
+        buf = io.BytesIO()
+        frames[0].save(buf, format='GIF', save_all=True,
+                    append_images=frames[1:], duration=30, loop=0)
+        buf.seek(0)
+
+        # Convert GIF to base64 and render inline
+        b64 = base64.b64encode(buf.read()).decode("utf-8")
+        placeholder.markdown(
+            f'<img src="data:image/gif;base64,{b64}" alt="animation">',
+            unsafe_allow_html=True
+        )
+
     
     # Visualization Functions
     def create_key_comparison_plot(alice_key, bob_key, max_bits=50):
