@@ -16,6 +16,7 @@ import time
 from PIL import Image, ImageDraw
 
 def run():
+    st.divider()
     # Page config
     st.set_page_config(page_title="BB84 Quantum Simulation", layout="wide", initial_sidebar_state="expanded")
     

@@ -10,6 +10,17 @@ from quiz import render_quiz, has_passed_quiz
 from certificate import render_certificate_page, has_certificate
 import importlib
 
+import streamlit.components.v1 as components
+
+components.html(
+    """
+    <script>
+        window.parent.document.documentElement.scrollTop = 0;
+    </script>
+    """,
+    height=0,
+)
+
 # Page configuration
 st.set_page_config(
     page_title="Quantum Virtual Labs",
@@ -68,9 +79,9 @@ with st.sidebar:
                 
                 # Add checkmarks for completed sections
                 if section == "Test" and quiz_passed:
-                    label += " ✅"
+                    label += " (Passed)"
                 elif section == "Certificate" and cert_generated:
-                    label += " ✅"
+                    label += " (Generated)"
                 
                 if st.button(label, use_container_width=True, 
                            type="primary" if st.session_state.current_lab_section == section else "secondary"):
@@ -136,8 +147,8 @@ if not st.session_state.current_lab:
                     </p>
                     <p style="font-size: 0.8rem; color: var(--text-color-secondary);">
                         Difficulty: {lab_config['difficulty']} • {
-                            '✅ Completed' if cert_generated else
-                            '✅ Quiz Passed' if quiz_passed else 'Not Started'
+                            'Completed' if cert_generated else
+                            'Quiz Passed' if quiz_passed else 'Not Started'
                         }
                     </p>
                 </div>
@@ -176,7 +187,14 @@ if not st.session_state.current_lab:
         explore quantum phenomena through simulation, experimentation, and visualization."
 
         ---
-
+        """)
+        col1, col2, col3 = st.columns([3, 3, 2])
+        with col2:
+            try:
+                st.image("vesit_logo.png", width=200)
+            except:
+                st.info("VESIT Logo")
+        st.markdown("""
         #### Credits  
         **Mentor:**  
         Dr. *Ranjan Bala Jain*, Department of Electronics and Telecommunication (EXTC)

@@ -8,6 +8,16 @@ import matplotlib.pyplot as plt
 
 
 def run():
+    import streamlit.components.v1 as components
+
+    components.html(
+        """
+        <script>
+            window.parent.document.documentElement.scrollTop = 0;
+        </script>
+        """,
+        height=0,
+    )
     st.title("Quantum Phase Estimation")
     st.markdown("### Estimate Eigenvalue Phase of Unitary Operators")
 

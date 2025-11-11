@@ -20,7 +20,7 @@ def render_quiz(lab_name: str):
         return
     
     quiz = lab_config["quiz"]
-    st.header("📝 Test Your Knowledge")
+    st.header("Test Your Knowledge")
     st.markdown("Answer the following questions to test your understanding of the theory.")
     
     # Initialize session state for quiz
@@ -59,12 +59,12 @@ def render_quiz(lab_name: str):
             user_answer = quiz_state["answers"][i]
             
             if user_answer == correct_index:
-                st.success("✅ Correct!")
+                st.success("Correct!")
             else:
-                st.error(f"❌ Incorrect. The correct answer is: {question_data['options'][correct_index]}")
+                st.error(f"Incorrect. The correct answer is: {question_data['options'][correct_index]}")
             
             # Show explanation
-            with st.expander("💡 Explanation"):
+            with st.expander("Explanation"):
                 st.markdown(question_data["explanation"])
         
         st.divider()
@@ -111,7 +111,7 @@ def render_quiz(lab_name: str):
     if quiz_state["submitted"]:
         score_percentage = (quiz_state["score"] / len(quiz)) * 100
         if score_percentage >= 70:
-            st.success(f"🎉 Congratulations! You passed with {score_percentage:.1f}%")
+            st.success(f"Congratulations! You passed with {score_percentage:.1f}%")
             # Mark quiz as passed in lab progress
             if "lab_progress" not in st.session_state:
                 st.session_state.lab_progress = {}
@@ -119,7 +119,7 @@ def render_quiz(lab_name: str):
                 st.session_state.lab_progress[lab_config["id"]] = {}
             st.session_state.lab_progress[lab_config["id"]]["quiz_passed"] = True
         else:
-            st.warning(f"📚 You scored {score_percentage:.1f}%. Review the theory and try again!")
+            st.warning(f"You scored {score_percentage:.1f}%. Review the theory and try again!")
 
 def get_quiz_score(lab_id: str):
     """Get quiz score for a lab"""

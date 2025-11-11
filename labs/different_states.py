@@ -6,20 +6,32 @@ from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
 
 def run():
-    st.title("Measurement in Different Bases")
-    st.markdown("""
-    **Objective:**  
-    Measure the quantum states **|+⟩** and **|i⟩** in **Z**, **X**, and **Y** bases and observe how measurement outcomes change.  
+    import streamlit.components.v1 as components
 
-    **States:**  
-    - |+⟩ = (|0⟩ + |1⟩) / √2  
-    - |i⟩ = (|0⟩ + i|1⟩) / √2  
+    components.html(
+        """
+        <script>
+            window.parent.document.documentElement.scrollTop = 0;
+        </script>
+        """,
+        height=0,
+    )
+    st.divider()
+    A, B = st.columns(2)
+    with A:
+        st.markdown("""
+        **States:**  
+        - |+⟩ = (|0⟩ + |1⟩) / √2  
+        - |i⟩ = (|0⟩ + i|1⟩) / √2 
+        """)
+    with B:
+        st.markdown(""" 
+        **Measurement Bases:**  
+        - Z → |0⟩, |1⟩  
+        - X → |+⟩, |−⟩  
+        - Y → |+i⟩, |−i⟩
+        """)
 
-    **Measurement Bases:**  
-    - Z → |0⟩, |1⟩  
-    - X → |+⟩, |−⟩  
-    - Y → |+i⟩, |−i⟩
-    """)
 
     # --- user controls ---
     col1, col2, col3 = st.columns(3)
@@ -58,12 +70,9 @@ def run():
 
     with colA:
         st.markdown(" ")
+        st.markdown(" ")
+        st.markdown(" ")
         st.subheader("Initial State (Bloch Sphere)")
-        st.markdown(" ")
-        st.markdown(" ")
-        st.markdown(" ")
-        st.markdown(" ")
-        st.markdown(" ")
         state = Statevector.from_instruction(qc)
         bloch_fig = plot_bloch_multivector(state)
         bloch_fig.set_size_inches(3, 3)

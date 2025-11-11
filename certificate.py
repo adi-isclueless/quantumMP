@@ -8,21 +8,23 @@ import io
 from datetime import datetime
 from lab_config import get_lab
 
-def generate_certificate(lab_name: str, user_name: str = None):
+def generate_certificate(lab_id_or_name: str, user_name: str = None, lab_config: dict = None):
     """Generate a premium certificate for completing a lab including VESIT Logo"""
-    from lab_config import get_lab
-    lab_config = get_lab(lab_name)
+    # If lab_config is provided, use it directly
+    if lab_config is None:
+        from lab_config import get_lab, LABS
+        lab_config = get_lab(lab_id_or_name)
 
-    if not lab_config:
-        from lab_config import LABS
-        for name, config in LABS.items():
-            if config["id"] == lab_name or name == lab_name:
-                lab_config = config
-                break
+        # Fallback: try to find by ID or name
+        if not lab_config:
+            for name, config in LABS.items():
+                if config["id"] == lab_id_or_name or name == lab_id_or_name:
+                    lab_config = config
+                    break
 
-    if not lab_config:
-        st.error("Lab not found")
-        return None
+        if not lab_config:
+            st.error(f"Lab not found: {lab_id_or_name}")
+            return None
 
     if user_name is None:
         user_name = st.session_state.get("user_name", "Student")
@@ -203,7 +205,7 @@ def render_certificate_page(lab_name: str):
     # Generate and display certificate
     if st.button("Generate Certificate", type="primary", use_container_width=True):
         with st.spinner("Generating certificate..."):
-            cert_image = generate_certificate(lab_config["title"], user_name)
+            cert_image = generate_certificate(lab_id, user_name, lab_config)
             
             if cert_image:
                 # Convert to bytes

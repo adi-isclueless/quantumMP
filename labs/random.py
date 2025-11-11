@@ -8,6 +8,17 @@ from scipy import stats
 
 
 def run():
+    import streamlit.components.v1 as components
+
+    components.html(
+        """
+        <script>
+            window.parent.document.documentElement.scrollTop = 0;
+        </script>
+        """,
+        height=0,
+    )
+    st.divider()
     # ----------------------------
     # Function to create QRNG circuit
     # ----------------------------

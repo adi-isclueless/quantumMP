@@ -7,6 +7,16 @@ import io
 
 
 def run():
+    import streamlit.components.v1 as components
+
+    components.html(
+        """
+        <script>
+            window.parent.document.documentElement.scrollTop = 0;
+        </script>
+        """,
+        height=0,
+    )
     def create_3_qubit_parity_check_circuit(input_state: str) -> QuantumCircuit:
         """
         Creates a 3-qubit parity check circuit.
@@ -46,15 +56,6 @@ def run():
     # --- Streamlit UI ---
 
     st.set_page_config(page_title="3-Qubit Quantum Parity Check", layout="wide")
-    st.title("3-Qubit Quantum Parity Check")
-
-    st.markdown(
-        """
-        Explore how a quantum circuit can determine the parity (even or odd) of a **3-qubit** input state.
-        An **ancilla qubit** (q3) is a helper qubit used to store the calculation.
-        The final state of the ancilla reveals the parity: **`0` for Even**, **`1` for Odd**.
-        """
-    )
 
     A, B, C = st.columns(3)
     with A:

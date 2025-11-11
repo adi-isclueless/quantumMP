@@ -10,8 +10,19 @@ from io import BytesIO
 
 
 def run():
-    st.title("Quantum State Tomography Virtual Lab")
-    st.write("Reconstruct quantum states through measurement in different bases")
+    import streamlit.components.v1 as components
+
+    components.html(
+        """
+        <script>
+            window.parent.document.documentElement.scrollTop = 0;
+        </script>
+        """,
+        height=0,
+    )
+
+    st.divider()
+
 
     # Initialize session state
     if 'measurements_done' not in st.session_state:

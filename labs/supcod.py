@@ -12,12 +12,16 @@ import matplotlib.pyplot as plt
 # FUNCTION: Run Superdense Coding Lab
 # ==================================================
 def run():
-    st.title("Superdense Coding Virtual Lab")
-    st.markdown("""
-    **Objective:**  
-    To demonstrate **Superdense Coding**, where two classical bits of information
-    are transmitted using a single qubit, leveraging a shared entangled pair.
-    """)
+    import streamlit.components.v1 as components
+
+    components.html(
+        """
+        <script>
+            window.parent.document.documentElement.scrollTop = 0;
+        </script>
+        """,
+        height=0,
+    )
 
     st.divider()
 

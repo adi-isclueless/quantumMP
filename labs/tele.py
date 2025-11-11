@@ -14,15 +14,16 @@ import numpy as np
 # FUNCTION: Run Quantum Teleportation Lab
 # ==================================================
 def run():
-    # -----------------------
-    # Streamlit Page Setup
-    # -----------------------
-    st.title("Quantum Teleportation Virtual Lab")
-    st.markdown("""
-    Welcome to the **Quantum Teleportation Lab**.  
-    Here, you'll explore how a quantum state is **transferred** from Alice to Bob  
-    without physically moving the qubit — using **entanglement** and **classical communication**.
-    """)
+    import streamlit.components.v1 as components
+
+    components.html(
+        """
+        <script>
+            window.parent.document.documentElement.scrollTop = 0;
+        </script>
+        """,
+        height=0,
+    )
 
     st.divider()
 
