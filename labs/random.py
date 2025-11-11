@@ -265,18 +265,10 @@ def run():
         </style>
     """, unsafe_allow_html=True)
 
-    # Header
-    st.markdown("""
-        <div class="main-header">
-            <h1>Quantum Random Number Generator Lab</h1>
-            <p>Harnessing Quantum Superposition for True Randomness</p>
-        </div>
-    """, unsafe_allow_html=True)
 
     # ----------------------------
     # Main Control Panel (Top Section)
     # ----------------------------
-    st.markdown("##Control Panel")
 
     # Three columns for controls
     ctrl_col1, ctrl_col2, ctrl_col3 = st.columns([2, 2, 1])
