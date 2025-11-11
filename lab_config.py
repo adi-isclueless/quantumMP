@@ -1214,7 +1214,7 @@ Creating a W state is more complex than GHZ:
         "id": "circuit_identity",
         "module": "circuit_identity",
         "title": "Q-Circuit Identity Verification",
-        "description": "Verify equivalence of circuits (e.g., HZH = X, consecutive CNOT swaps) by comparing simulation outcomes.",
+        "description": "Verify equivalence of circuits by comparing simulation outcomes.",
         "category": "Quantum Logic & Operations",
         "difficulty": "Intermediate",
         "theory": """
