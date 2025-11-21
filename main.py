@@ -96,10 +96,24 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # User info
+    # User info and Progress
     st.markdown(f"**Welcome, {st.session_state.user_name or st.session_state.username}!**")
     if st.button("Logout", use_container_width=True):
         logout()
+    
+    st.markdown("---")
+    
+    # Progress section
+    st.markdown("### Your Progress")
+    total_labs = len(LABS)
+    completed = sum(1 for lab_id in [config['id'] for config in LABS.values()] if has_certificate(lab_id))
+    quiz_passed_count = sum(1 for lab_id in [config['id'] for config in LABS.values()] if has_passed_quiz(lab_id))
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Labs Completed", f"{completed}/{total_labs}")
+    with col2:
+        st.metric("Quizzes Passed", f"{quiz_passed_count}/{total_labs}")
     
     st.markdown("---")
     
@@ -226,87 +240,65 @@ if not st.session_state.current_lab:
     
     st.markdown("---")
     
-    # Show experiments only if button clicked
-    if st.session_state.get("show_labs", False):
-        st.markdown("## 🧪 Available Experiments")
-        st.markdown(f"**Total: 14 Quantum Computing Labs**")
-        st.markdown("")
-        
-        # Display labs by category
-        labs_by_category = get_labs_by_category()
-        
-        for category, labs in labs_by_category.items():
-            st.markdown(f"### {category}")
-            
-            # Create columns for lab cards
-            cols = st.columns(3)
-            for idx, (lab_name, lab_config) in enumerate(labs):
-                col = cols[idx % 3]
-                
-                with col:
-                    # Check progress
-                    lab_id = lab_config["id"]
-                    quiz_passed = has_passed_quiz(lab_id)
-                    cert_generated = has_certificate(lab_id)
-                    
-                    # Status indicator
-                    if cert_generated:
-                        status = "✅ Completed"
-                        status_color = "#4caf50"
-                    elif quiz_passed:
-                        status = "✓ Quiz Passed"
-                        status_color = "#2196f3"
-                    else:
-                        status = "○ Not Started"
-                        status_color = "#999"
-                    
-                    card_html = f"""
-                    <div style="
-                        border: 2px solid #667eea;
-                        border-radius: 10px;
-                        padding: 1.2rem;
-                        margin: 0.5rem 0;
-                        background: var(--secondary-background-color);
-                        color: var(--text-color);
-                        transition: all 0.3s ease;
-                    ">
-                        <h4 style="color: var(--text-color); margin: 0 0 10px 0;">{lab_config['title']}</h4>
-                        <p style="font-size: 0.9rem; color: var(--text-color-secondary); margin: 0 0 10px 0;">
-                            {lab_config['description'][:100]}...
-                        </p>
-                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-color-secondary);">
-                            <span>Difficulty: <strong>{lab_config['difficulty']}</strong></span>
-                            <span style="color: {status_color}; font-weight: bold;">{status}</span>
-                        </div>
-                    </div>
-                    """
-
-                    st.markdown(card_html, unsafe_allow_html=True)
-                    
-                    if st.button(f"Start Experiment", key=f"start_{lab_id}", use_container_width=True):
-                        st.session_state.current_lab = lab_id
-                        st.session_state.current_lab_section = "Theory"
-                        st.rerun()
-            
-            st.markdown("")
-        
-        st.markdown("---")
+    # Always show all experiments in a table/list format
+    st.markdown("## Available Experiments")
+    st.markdown(f"**Total: 14 Quantum Computing Labs**")
+    st.markdown("")
     
-    else:
-        # Show stats when not browsing
-        st.markdown("### Your Progress")
+    # Get all labs
+    all_labs = []
+    for lab_name, lab_config in LABS.items():
+        lab_id = lab_config["id"]
+        quiz_passed = has_passed_quiz(lab_id)
+        cert_generated = has_certificate(lab_id)
         
-        total_labs = len(LABS)
-        completed = sum(1 for lab_id in [config['id'] for config in LABS.values()] if has_certificate(lab_id))
-        quiz_passed_count = sum(1 for lab_id in [config['id'] for config in LABS.values()] if has_passed_quiz(lab_id))
+        # Determine status
+        if cert_generated:
+            status = "Completed"
+        elif quiz_passed:
+            status = "Quiz Passed"
+        else:
+            status = "Not Started"
         
-        col1, col2, col3 = st.columns(3)
+        all_labs.append({
+            'title': lab_config['title'],
+            'category': lab_config['category'],
+            'difficulty': lab_config['difficulty'],
+            'status': status,
+            'lab_id': lab_id,
+            'config': lab_config
+        })
+    
+    # Sort by category
+    all_labs.sort(key=lambda x: (x['category'], x['title']))
+    
+    # Display as a list with buttons
+    for idx, lab in enumerate(all_labs):
+        col1, col2, col3, col4 = st.columns([3, 1, 1, 1])
+        
         with col1:
-            st.metric("Total Labs", total_labs)
+            st.markdown(f"**{lab['title']}**")
+            st.markdown(f"<small>{lab['category']}</small>", unsafe_allow_html=True)
+        
         with col2:
-            st.metric("Completed", completed)
+            st.markdown(f"<small>Difficulty: {lab['difficulty']}</small>", unsafe_allow_html=True)
+        
         with col3:
-            st.metric("Quizzes Passed", quiz_passed_count)
+            # Status badge
+            if lab['status'] == 'Completed':
+                st.markdown("<small style='color: #4caf50; font-weight: bold;'>Completed</small>", unsafe_allow_html=True)
+            elif lab['status'] == 'Quiz Passed':
+                st.markdown("<small style='color: #2196f3; font-weight: bold;'>Quiz Passed</small>", unsafe_allow_html=True)
+            else:
+                st.markdown("<small style='color: #999;'>Not Started</small>", unsafe_allow_html=True)
+        
+        with col4:
+            if st.button("Start", key=f"start_{lab['lab_id']}", use_container_width=True):
+                st.session_state.current_lab = lab['lab_id']
+                st.session_state.current_lab_section = "Theory"
+                st.rerun()
+        
+        st.divider()
     
 
 else:
