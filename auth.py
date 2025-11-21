@@ -94,7 +94,7 @@ def send_otp_email(email: str, otp: str, username: str = None) -> bool:
         <html>
             <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.8; background-color: #f5f5f5; padding: 20px;">
                 <div style="background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto;">
-                    <h2 style="color: #1a237e; text-align: center; margin-bottom: 20px;">Quantum Virtual Labs</h2>
+                    <h2 style="color: #1a237e; text-align: center; margin-bottom: 20px;">🔐 Quantum Virtual Labs</h2>
                     
                     <p style="color: #333; font-size: 16px;">
                         Hello{f' <strong>{username}</strong>' if username else ''},
@@ -269,7 +269,7 @@ def login_page():
         
         if st.session_state.otp_step == 'login':
             # OTP verification screen for login
-            st.info("An OTP has been sent to your email. Please enter it below.")
+            st.info("📧 An OTP has been sent to your email. Please enter it below.")
             login_email = st.session_state.get('pending_login_email', '')
             st.text(f"Verifying: {login_email}")
             
@@ -279,9 +279,9 @@ def login_page():
             with col1:
                 if st.button("Verify OTP", type="primary", use_container_width=True):
                     if not otp_input or len(otp_input) != 6:
-                        st.error("Please enter a valid 6-digit OTP")
+                        st.error("❌ Please enter a valid 6-digit OTP")
                     else:
-                        with st.spinner("Verifying OTP..."):
+                        with st.spinner("🔐 Verifying OTP..."):
                             if verify_otp(login_email, otp_input):
                                 # Authentication successful
                                 user_doc = _users_collection().find_one({"email": login_email})
@@ -293,13 +293,13 @@ def login_page():
                                     st.session_state.otp_step = None
                                     load_user_progress_into_session(user_doc["_id"])
                                     
-                                    st.success(f"Welcome back, {user_doc.get('name', '')}!")
+                                    st.success(f"✅ Welcome back, {user_doc.get('name', '')}!")
                                     st.balloons()
                                     import time
                                     time.sleep(1)
                                     st.rerun()
                             else:
-                                st.error("Invalid OTP. Please try again.")
+                                st.error("❌ Invalid OTP. Please try again.")
             
             with col2:
                 if st.button("Back", use_container_width=True):
@@ -321,7 +321,7 @@ def login_page():
                     if not user:
                         st.error("❌ No account found with this email address")
                     else:
-                        with st.spinner("Sending OTP to your email..."):
+                        with st.spinner("📧 Sending OTP to your email..."):
                             otp = create_otp_record(login_email)
                             if send_otp_email(login_email, otp, user.get('name', user.get('username'))):
                                 st.session_state.otp_step = 'login'
@@ -339,7 +339,7 @@ def login_page():
         
         if st.session_state.otp_step == 'registration':
             # OTP verification screen for registration
-            st.info("An OTP has been sent to your email. Please enter it to complete registration.")
+            st.info("📧 An OTP has been sent to your email. Please enter it to complete registration.")
             reg_email = st.session_state.get('pending_reg_email', '')
             st.text(f"Verifying: {reg_email}")
             
@@ -351,7 +351,7 @@ def login_page():
                     if not otp_input or len(otp_input) != 6:
                         st.error("❌ Please enter a valid 6-digit OTP")
                     else:
-                        with st.spinner("Verifying OTP and completing registration..."):
+                        with st.spinner("🔐 Verifying OTP and completing registration..."):
                             if verify_otp(reg_email, otp_input):
                                 # Create account and auto-login
                                 user_doc = _users_collection().find_one({"email": reg_email})
@@ -369,7 +369,7 @@ def login_page():
                                         {"$set": {"email_verified": True}}
                                     )
                                     
-                                    st.success(f"Registration Complete! Welcome, {user_doc.get('name', '')}!")
+                                    st.success(f"✅ Registration Complete! Welcome, {user_doc.get('name', '')}! 🎉")
                                     st.balloons()
                                     import time
                                     time.sleep(2)
@@ -404,10 +404,10 @@ def login_page():
                     st.error("❌ Please enter a valid email address")
                 else:
                     # Attempt registration
-                    with st.spinner("Creating account..."):
+                    with st.spinner("🔄 Creating account..."):
                         if register_user(reg_username, reg_password, reg_name, reg_email):
                             # Account created, now send OTP
-                            with st.spinner("Sending OTP to your email..."):
+                            with st.spinner("📧 Sending OTP to your email..."):
                                 otp = create_otp_record(reg_email)
                                 if send_otp_email(reg_email, otp, reg_name):
                                     st.session_state.otp_step = 'registration'
