@@ -4,97 +4,64 @@ Handles user login, logout, and session management
 """
 
 import streamlit as st
-import hashlib
-import json
-import os
-from pathlib import Path
+import bcrypt
+from datetime import datetime
 
-# Simple file-based user storage (in production, use a database)
-USERS_FILE = "users.json"
+from db import get_database
+from progress_store import load_user_progress_into_session
 
-def init_users_file():
-    """Initialize users file if it doesn't exist"""
-    if not os.path.exists(USERS_FILE):
-        # Default admin user (password: admin123)
-        default_users = {
-            "admin": {
-                "password": hash_password("admin123"),
-                "name": "Admin User",
-                "email": "admin@vesit.ac.in"
-            }
-        }
-        with open(USERS_FILE, 'w') as f:
-            json.dump(default_users, f, indent=2)
+
+def _users_collection():
+    db = get_database()
+    db.users.create_index("username", unique=True)
+    db.users.create_index("email", unique=True, sparse=True)
+    return db.users
+
 
 def hash_password(password: str) -> str:
-    """Hash a password using SHA256"""
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Hash a password using bcrypt."""
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
 
 def verify_password(password: str, hashed: str) -> bool:
-    """Verify a password against its hash"""
-    return hash_password(password) == hashed
+    """Verify a password against its hash."""
+    return bcrypt.checkpw(password.encode(), hashed.encode())
+
 
 def register_user(username: str, password: str, name: str, email: str = "") -> bool:
-    """Register a new user"""
-    init_users_file()
-    
-    # Load existing users
-    if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, 'r') as f:
-            users = json.load(f)
-    else:
-        users = {}
-    
-    # Check if user already exists
-    if username in users:
+    """Register a new user in MongoDB."""
+    users = _users_collection()
+    if users.find_one({"username": username}):
         return False
-    
-    # Add new user
-    users[username] = {
-        "password": hash_password(password),
-        "name": name,
-        "email": email
-    }
-    
-    # Save users
-    with open(USERS_FILE, 'w') as f:
-        json.dump(users, f, indent=2)
-    
+    if email and users.find_one({"email": email}):
+        return False
+
+    users.insert_one(
+        {
+            "username": username,
+            "password": hash_password(password),
+            "name": name,
+            "email": email,
+            "created_at": datetime.utcnow(),
+        }
+    )
     return True
 
-def authenticate_user(username: str, password: str) -> bool:
-    """Authenticate a user"""
-    init_users_file()
-    
-    if not os.path.exists(USERS_FILE):
-        return False
-    
-    # Load users
-    with open(USERS_FILE, 'r') as f:
-        users = json.load(f)
-    
-    # Check if user exists and password matches
-    if username in users:
-        return verify_password(password, users[username]["password"])
-    
-    return False
+
+def authenticate_user(username: str, password: str):
+    """Authenticate a user and return the document on success."""
+    user = _users_collection().find_one({"username": username})
+    if not user:
+        return None
+    if not verify_password(password, user["password"]):
+        return None
+    return user
+
 
 def get_user_info(username: str) -> dict:
-    """Get user information"""
-    init_users_file()
-    
-    if not os.path.exists(USERS_FILE):
-        return None
-    
-    with open(USERS_FILE, 'r') as f:
-        users = json.load(f)
-    
-    if username in users:
-        user_info = users[username].copy()
-        user_info.pop("password", None)  # Don't return password
-        return user_info
-    
-    return None
+    """Get user information without password."""
+    user = _users_collection().find_one({"username": username}, {"password": 0})
+    return user
 
 def init_session_state():
     """Initialize session state for authentication"""
@@ -124,11 +91,13 @@ def login_page():
         password = st.text_input("Password", type="password", key="login_password")
         
         if st.button("Login", type="primary", use_container_width=True):
-            if authenticate_user(username, password):
+            user_doc = authenticate_user(username, password)
+            if user_doc:
                 st.session_state.authenticated = True
                 st.session_state.username = username
-                user_info = get_user_info(username)
-                st.session_state.user_name = user_info.get("name", username)
+                st.session_state.user_id = str(user_doc["_id"])
+                st.session_state.user_name = user_doc.get("name", username)
+                load_user_progress_into_session(user_doc["_id"])
                 st.success("Login successful!")
                 st.rerun()
             else:
@@ -156,6 +125,7 @@ def logout():
     """Logout the current user"""
     st.session_state.authenticated = False
     st.session_state.username = None
+    st.session_state.user_id = None
     st.session_state.user_name = None
     st.rerun()
 

@@ -4,6 +4,7 @@ Quiz module for testing knowledge after theory sections
 
 import streamlit as st
 from lab_config import get_lab
+from progress_store import save_quiz_score, set_lab_progress_flag
 
 def render_quiz(lab_name: str):
     """Render quiz for a specific lab"""
@@ -84,13 +85,12 @@ def render_quiz(lab_name: str):
                 quiz_state["submitted"] = True
                 
                 # Store in session state
-                if "quiz_scores" not in st.session_state:
-                    st.session_state.quiz_scores = {}
-                st.session_state.quiz_scores[lab_config["id"]] = {
+                score_payload = {
                     "score": score,
                     "total": len(quiz),
                     "percentage": (score / len(quiz)) * 100
                 }
+                save_quiz_score(lab_config["id"], score_payload)
                 
                 st.rerun()
         else:
@@ -112,12 +112,7 @@ def render_quiz(lab_name: str):
         score_percentage = (quiz_state["score"] / len(quiz)) * 100
         if score_percentage >= 70:
             st.success(f"Congratulations! You passed with {score_percentage:.1f}%")
-            # Mark quiz as passed in lab progress
-            if "lab_progress" not in st.session_state:
-                st.session_state.lab_progress = {}
-            if lab_config["id"] not in st.session_state.lab_progress:
-                st.session_state.lab_progress[lab_config["id"]] = {}
-            st.session_state.lab_progress[lab_config["id"]]["quiz_passed"] = True
+            set_lab_progress_flag(lab_config["id"], "quiz_passed", True)
         else:
             st.warning(f"You scored {score_percentage:.1f}%. Review the theory and try again!")
 

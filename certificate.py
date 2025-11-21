@@ -7,7 +7,10 @@ from PIL import Image, ImageDraw, ImageFont
 import io
 from datetime import datetime
 from lab_config import get_lab
+from progress_store import mark_certificate_generated
 import re
+import os
+import platform
 import matplotlib.pyplot as plt
 
 def store_simulation_data(lab_id: str, metrics: dict = None, measurements: dict = None, figures: list = None):
@@ -350,12 +353,7 @@ def render_certificate_page(lab_name: str):
                 )
                 
                 # Mark certificate as generated
-                if "lab_progress" not in st.session_state:
-                    st.session_state.lab_progress = {}
-                if lab_id not in st.session_state.lab_progress:
-                    st.session_state.lab_progress[lab_id] = {}
-                st.session_state.lab_progress[lab_id]["certificate_generated"] = True
-                st.session_state.lab_progress[lab_id]["certificate_date"] = datetime.now().strftime('%Y-%m-%d')
+                mark_certificate_generated(lab_id)
                 
                 st.success("Certificate generated successfully!")
     
@@ -396,6 +394,40 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
     if user_name is None:
         user_name = st.session_state.get("user_name", "Student")
     
+    # Register a Unicode-capable font so Greek symbols render correctly
+    body_font_name = "Helvetica"
+    bold_font_name = "Helvetica-Bold"
+    font_candidates = []
+    system_name = platform.system()
+    if system_name == "Windows":
+        font_candidates = [
+            ("ArialUnicodeMS", r"C:\Windows\Fonts\arialuni.ttf", r"C:\Windows\Fonts\arialuni.ttf"),
+            ("Arial", r"C:\Windows\Fonts\arial.ttf", r"C:\Windows\Fonts\arialbd.ttf"),
+        ]
+    elif system_name == "Darwin":
+        font_candidates = [
+            ("ArialUnicodeMS", "/Library/Fonts/Arial Unicode.ttf", "/Library/Fonts/Arial Unicode.ttf"),
+            ("Arial", "/Library/Fonts/Arial.ttf", "/Library/Fonts/Arial Bold.ttf"),
+        ]
+    else:  # Linux and others
+        font_candidates = [
+            ("DejaVuSans", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+             "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
+            ("FreeSans", "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
+             "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf"),
+        ]
+
+    for candidate_name, regular_path, bold_path in font_candidates:
+        if os.path.exists(regular_path) and os.path.exists(bold_path):
+            try:
+                pdfmetrics.registerFont(TTFont(candidate_name, regular_path))
+                pdfmetrics.registerFont(TTFont(f"{candidate_name}-Bold", bold_path))
+                body_font_name = candidate_name
+                bold_font_name = f"{candidate_name}-Bold"
+                break
+            except Exception:
+                continue
+
     # Create PDF buffer
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4,
@@ -414,7 +446,7 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
         textColor=colors.HexColor('#1a237e'),
         spaceAfter=30,
         alignment=TA_CENTER,
-        fontName='Helvetica-Bold'
+        fontName=bold_font_name
     )
     
     heading_style = ParagraphStyle(
@@ -424,7 +456,7 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
         textColor=colors.HexColor('#3949ab'),
         spaceAfter=12,
         spaceBefore=20,
-        fontName='Helvetica-Bold'
+        fontName=bold_font_name
     )
     
     subheading_style = ParagraphStyle(
@@ -434,7 +466,7 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
         textColor=colors.HexColor('#5e35b1'),
         spaceAfter=10,
         spaceBefore=15,
-        fontName='Helvetica-Bold'
+        fontName=bold_font_name
     )
     
     normal_style = ParagraphStyle(
@@ -444,7 +476,8 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
         textColor=colors.black,
         spaceAfter=12,
         alignment=TA_JUSTIFY,
-        leading=14
+        leading=14,
+        fontName=body_font_name
     )
     
     info_style = ParagraphStyle(
@@ -453,9 +486,25 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
         fontSize=10,
         textColor=colors.grey,
         spaceAfter=5,
-        alignment=TA_LEFT
+        alignment=TA_LEFT,
+        fontName=body_font_name
     )
     
+    # Helper function to sanitize plain text (used in tables)
+    def sanitize_plain_text(text):
+        if text is None:
+            return ""
+        if not isinstance(text, str):
+            text = str(text)
+        replacement_map = {
+            '\u27E8': '<', '\u27E9': '>',
+            '\u3008': '<', '\u3009': '>',
+            '\u2329': '<', '\u232A': '>',
+        }
+        if any(ch in text for ch in replacement_map):
+            text = ''.join(replacement_map.get(ch, ch) for ch in text)
+        return text
+
     # Helper function to clean markdown and convert to Paragraph
     def markdown_to_paragraph(text, style):
         # Remove markdown headers
@@ -610,8 +659,8 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
         ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#e3f2fd')),
         ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-        ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+        ('FONTNAME', (0, 0), (0, -1), bold_font_name),
+        ('FONTNAME', (1, 0), (1, -1), body_font_name),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
         ('TOPPADDING', (0, 0), (-1, -1), 8),
@@ -688,14 +737,18 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
             elements.append(Paragraph("Simulation Metrics:", subheading_style))
             metrics_data = [['Metric', 'Value']]
             for key, value in simulation_data['metrics'].items():
-                metrics_data.append([str(key), str(value)])
+                metrics_data.append([
+                    sanitize_plain_text(key),
+                    sanitize_plain_text(value)
+                ])
             
             metrics_table = Table(metrics_data, colWidths=[3*inch, 2*inch])
             metrics_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e3f2fd')),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
                 ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTNAME', (0, 0), (-1, 0), bold_font_name),
+                ('FONTNAME', (0, 1), (-1, -1), body_font_name),
                 ('FONTSIZE', (0, 0), (-1, -1), 9),
                 ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
                 ('TOPPADDING', (0, 0), (-1, -1), 6),
@@ -711,7 +764,11 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
             total = sum(simulation_data['measurements'].values()) if isinstance(simulation_data['measurements'], dict) else 0
             for state, count in simulation_data['measurements'].items():
                 prob = (count / total * 100) if total > 0 else 0
-                meas_data.append([str(state), str(count), f"{prob:.2f}%"])
+                meas_data.append([
+                    sanitize_plain_text(state),
+                    sanitize_plain_text(count),
+                    sanitize_plain_text(f"{prob:.2f}%")
+                ])
             
             if len(meas_data) > 1:  # More than just header
                 meas_table = Table(meas_data, colWidths=[2*inch, 1.5*inch, 1.5*inch])
@@ -720,7 +777,8 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
                     ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
                     ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
                     ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
-                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                        ('FONTNAME', (0, 0), (-1, 0), bold_font_name),
+                        ('FONTNAME', (0, 1), (-1, -1), body_font_name),
                     ('FONTSIZE', (0, 0), (-1, -1), 9),
                     ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
                     ('TOPPADDING', (0, 0), (-1, -1), 6),

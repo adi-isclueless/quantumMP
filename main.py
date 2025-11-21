@@ -9,6 +9,7 @@ from lab_config import get_all_labs, get_labs_by_category, LABS
 from quiz import render_quiz, has_passed_quiz
 from certificate import render_certificate_page, has_certificate
 import importlib
+from progress_store import set_lab_progress_flag
 
 import streamlit.components.v1 as components
 
@@ -273,11 +274,7 @@ else:
         st.markdown("Interactive simulation of the quantum concepts you've learned.")
         
         # Mark simulation as accessed
-        if "lab_progress" not in st.session_state:
-            st.session_state.lab_progress = {}
-        if lab_config["id"] not in st.session_state.lab_progress:
-            st.session_state.lab_progress[lab_config["id"]] = {}
-        st.session_state.lab_progress[lab_config["id"]]["simulation_accessed"] = True
+        set_lab_progress_flag(lab_config["id"], "simulation_accessed", True)
         
         # Import and run the lab simulation
         try:
@@ -289,7 +286,7 @@ else:
                 lab_module.run()
                 
                 # Mark simulation as completed
-                st.session_state.lab_progress[lab_config["id"]]["simulation_completed"] = True
+                set_lab_progress_flag(lab_config["id"], "simulation_completed", True)
             else:
                 st.error("Lab simulation module not found or doesn't have a run() function")
         except Exception as e:

@@ -851,7 +851,7 @@ The state can be represented on the Bloch sphere:
 ## 6. Fidelity
 
 Fidelity measures reconstruction quality:
-- Fidelity = Tr(√(√ρₜₕₑₒᵣᵧ ρₑₓₚ√ρₜₕₑₒᵣᵧ)²)
+- Fidelity = Tr(√(√ρ_theo · ρ_exp · √ρ_theo)^2)
 - Fidelity = 1: Perfect reconstruction
 - Fidelity < 1: Imperfect (due to noise, finite samples)
 
