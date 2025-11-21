@@ -222,24 +222,6 @@ if not st.session_state.current_lab:
     st.markdown("")
     st.markdown("---")
     
-    # Call to action
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown("""
-        <div style="text-align: center; padding: 20px;">
-            <h3 style="color: #1a237e; margin-bottom: 15px;">Ready to Start Learning?</h3>
-            <p style="color: #666; font-size: 1.1rem; margin-bottom: 25px;">
-                Choose an experiment below and begin your quantum computing journey!
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        if st.button("Browse All Experiments", type="primary", use_container_width=True, key="browse_experiments"):
-            st.session_state.show_labs = True
-            st.rerun()
-    
-    st.markdown("---")
-    
     # Always show all experiments in a table/list format
     st.markdown("## Available Experiments")
     st.markdown(f"**Total: 14 Quantum Computing Labs**")
@@ -272,9 +254,9 @@ if not st.session_state.current_lab:
     # Sort by category
     all_labs.sort(key=lambda x: (x['category'], x['title']))
     
-    # Display as a list with buttons
+    # Display as a list without start buttons
     for idx, lab in enumerate(all_labs):
-        col1, col2, col3, col4 = st.columns([3, 1, 1, 1])
+        col1, col2, col3 = st.columns([3, 1, 1.5])
         
         with col1:
             st.markdown(f"**{lab['title']}**")
@@ -292,13 +274,15 @@ if not st.session_state.current_lab:
             else:
                 st.markdown("<small style='color: #999;'>Not Started</small>", unsafe_allow_html=True)
         
-        with col4:
-            if st.button("Start", key=f"start_{lab['lab_id']}", use_container_width=True):
-                st.session_state.current_lab = lab['lab_id']
-                st.session_state.current_lab_section = "Theory"
-                st.rerun()
-        
         st.divider()
+    
+    # Tile View button at the end
+    st.markdown("")
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        if st.button("Tile View", type="primary", use_container_width=True, key="tile_view_btn"):
+            st.session_state.show_tile_view = True
+            st.rerun()
     
 
 else:
