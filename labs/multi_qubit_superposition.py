@@ -10,6 +10,7 @@ from qiskit.quantum_info import Statevector
 from qiskit.visualization import plot_histogram, plot_state_city
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
+from certificate import store_simulation_data, save_figure_to_data
 
 def run():
     import streamlit.components.v1 as components
@@ -153,4 +154,43 @@ def run():
         st.info(f"Chi-square statistic: {chi_square:.2f} (lower is better for uniformity)")
     else:
         st.warning(f"Only {len(counts)} out of {num_states} states observed. Increase shots for better coverage.")
+    
+    # Store simulation data for PDF report
+    from lab_config import LABS
+    lab_id = None
+    for name, config in LABS.items():
+        if config.get('module') == 'multi_qubit_superposition':
+            lab_id = config['id']
+            break
+    
+    if lab_id:
+        metrics = {
+            'Number of Qubits': str(num_qubits),
+            'Number of Shots': str(shots),
+            'Total States Observed': str(len(counts)),
+            'Total Possible States': str(num_states),
+            'Theoretical Probability': f"{theoretical_prob:.4f}",
+        }
+        if len(counts) == num_states:
+            max_prob = max(observed_probs.values())
+            min_prob = min(observed_probs.values())
+            uniformity = 1 - (max_prob - min_prob) / theoretical_prob
+            metrics['Uniformity Score'] = f"{uniformity * 100:.2f}%"
+        
+        figures = []
+        if show_circuit:
+            fig_circuit = qc.draw(output='mpl', fold=-1)
+            figures.append(save_figure_to_data(fig_circuit, 'Quantum Circuit'))
+            plt.close(fig_circuit)
+        figures.append(save_figure_to_data(fig_hist, 'Probability Distribution'))
+        if show_statevector:
+            qc_no_measure = QuantumCircuit(num_qubits)
+            for i in range(num_qubits):
+                qc_no_measure.h(i)
+            state = Statevector.from_instruction(qc_no_measure)
+            fig_state = plot_state_city(state)
+            figures.append(save_figure_to_data(fig_state, 'Statevector Representation'))
+            plt.close(fig_state)
+        
+        store_simulation_data(lab_id, metrics=metrics, measurements=counts, figures=figures)
 

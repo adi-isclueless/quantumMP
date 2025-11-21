@@ -4,6 +4,7 @@ from qiskit.quantum_info import Statevector
 from qiskit.visualization import plot_histogram, plot_bloch_multivector
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
+from certificate import store_simulation_data, save_figure_to_data
 
 def run():
     import streamlit.components.v1 as components
@@ -85,5 +86,32 @@ def run():
         st.subheader("Quantum Circuit Used for Measurement")
         circ_fig = meas_circ.draw(output="mpl")
         st.pyplot(circ_fig)
-    # --- display circuit below ---
+    
+    # Store simulation data for PDF report
+    from lab_config import LABS
+    lab_id = None
+    for name, config in LABS.items():
+        if config.get('module') == 'different_states':
+            lab_id = config['id']
+            break
+    
+    if lab_id:
+        # Calculate probabilities
+        total = sum(counts.values())
+        metrics = {
+            'State': state_choice,
+            'Measurement Basis': basis_choice,
+            'Number of Shots': str(shots),
+        }
+        for state, count in counts.items():
+            prob = (count / total * 100) if total > 0 else 0
+            metrics[f'P(|{state}⟩)'] = f"{prob:.2f}%"
+        
+        figures = [
+            save_figure_to_data(bloch_fig, f'Bloch Sphere - {state_choice} State'),
+            save_figure_to_data(hist_fig, f'Measurement Results in {basis_choice}-basis'),
+            save_figure_to_data(circ_fig, 'Quantum Circuit')
+        ]
+        
+        store_simulation_data(lab_id, metrics=metrics, measurements=counts, figures=figures)
   

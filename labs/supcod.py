@@ -7,6 +7,7 @@ from qiskit import QuantumCircuit
 from qiskit_aer import AerSimulator
 from qiskit.visualization import plot_histogram, circuit_drawer
 import matplotlib.pyplot as plt
+from certificate import store_simulation_data, save_figure_to_data
 
 # ==================================================
 # FUNCTION: Run Superdense Coding Lab
@@ -114,6 +115,32 @@ def run():
 
 
     st.success(f"Message successfully transmitted and decoded. Expected measurement result: {bit_choice[::-1]}")
+    
+    # Store simulation data for PDF report
+    from lab_config import LABS
+    lab_id = None
+    for name, config in LABS.items():
+        if config.get('module') == 'supcod':
+            lab_id = config['id']
+            break
+    
+    if lab_id:
+        total = sum(counts.values())
+        metrics = {
+            'Message Sent': bit_choice,
+            'Expected Result': bit_choice[::-1],
+            'Number of Shots': '1024',
+        }
+        for state, count in counts.items():
+            prob = (count / total * 100) if total > 0 else 0
+            metrics[f'P({state})'] = f"{prob:.2f}%"
+        
+        figures = [
+            save_figure_to_data(fig_circuit, 'Superdense Coding Circuit'),
+            save_figure_to_data(fig1, 'Measurement Results')
+        ]
+        
+        store_simulation_data(lab_id, metrics=metrics, measurements=counts, figures=figures)
 
     st.caption("Developed with Qiskit and Streamlit • Quantum Virtual Labs © 2025")
 

@@ -5,6 +5,7 @@ from qiskit import QuantumCircuit, transpile
 from qiskit.visualization import plot_histogram
 from qiskit_aer import AerSimulator
 from scipy import stats
+from certificate import store_simulation_data, save_figure_to_data
 
 
 def run():
@@ -680,6 +681,8 @@ def run():
                 ax1.spines['right'].set_visible(False)
 
                 st.pyplot(fig1)
+                
+                # (Moved storing/export logic to after CDF figure is created)
 
                 # Additional stats below chart
                 deviation = abs(stats_dict['mean'] - stats_dict['theoretical_mean'])
@@ -708,6 +711,74 @@ def run():
 
                 # Chi-square details
                 st.metric("Chi-Square Statistic", f"{chi_stat:.4f}")
+
+                # Store simulation data for PDF/report now that both figures exist
+                try:
+                    from lab_config import LABS
+
+                    lab_id = None
+                    for name, config in LABS.items():
+                        if config.get('module') == 'random':
+                            lab_id = config['id']
+                            break
+
+                    if lab_id:
+                        # Prepare metrics
+                        metrics = {
+                            'Mean Value': f"{stats_dict['mean']:.2f}",
+                            'Expected Mean': f"{stats_dict['theoretical_mean']:.2f}",
+                            'Std Deviation': f"{stats_dict['std_dev']:.2f}",
+                            'Range': f"{stats_dict['min']}-{stats_dict['max']}",
+                            'Unique Values': f"{stats_dict['unique_values']}/{2**num_qubits_used}",
+                            'Chi-Square p-value': f"{p_value:.4f}",
+                            'Uniformity': "Uniform" if p_value > 0.05 else "Non-uniform"
+                        }
+
+                        # Prepare measurements (convert to counts format)
+                        measurements = {}
+                        counts_array = np.bincount(random_numbers, minlength=2**num_qubits_used)
+                        for val, count in enumerate(counts_array):
+                            if count > 0:
+                                measurements[str(val)] = int(count)
+
+                        # Prepare figures (save copies of both figures)
+                        figures = [
+                            save_figure_to_data(fig1, 'Frequency Distribution'),
+                            save_figure_to_data(fig2, 'Cumulative Distribution Function')
+                        ]
+
+                        # Add entropy plot if available
+                        try:
+                            rt_monitor = real_time_entropy_monitor(random_numbers, num_qubits_used, block_size=100)
+                            if len(rt_monitor['block_entropies']) > 0:
+                                fig_entropy, ax_entropy = plt.subplots(figsize=(10, 5))
+                                block_indices = range(1, rt_monitor['num_blocks'] + 1)
+                                ax_entropy.plot(block_indices, rt_monitor['block_entropies'],
+                                                marker='o', linewidth=2, markersize=6, color='#667eea')
+                                ax_entropy.axhline(y=rt_monitor['mean_entropy'], color='#27ae60',
+                                                   linestyle='--', linewidth=2)
+                                ax_entropy.set_xlabel('Block Number', fontsize=12, fontweight='bold')
+                                ax_entropy.set_ylabel('Min-Entropy per Bit', fontsize=12, fontweight='bold')
+                                ax_entropy.set_title('Entropy Consistency Across Data Blocks', fontsize=14, fontweight='bold')
+                                ax_entropy.grid(True, alpha=0.3, linestyle='--')
+                                figures.append(save_figure_to_data(fig_entropy, 'Entropy Consistency'))
+                                plt.close(fig_entropy)
+                        except Exception:
+                            # non-fatal: don't block UI if entropy plot generation fails
+                            pass
+
+                        # Add entropy metrics
+                        try:
+                            min_entropy = calculate_min_entropy(random_numbers, num_qubits_used)
+                            metrics['Min-Entropy'] = f"{min_entropy['min_entropy_total']:.4f}"
+                            metrics['Min-Entropy Quality'] = f"{min_entropy['quality_percentage']:.1f}%"
+                        except Exception:
+                            pass
+
+                        store_simulation_data(lab_id, metrics=metrics, measurements=measurements, figures=figures)
+                except Exception:
+                    # Swallow exceptions here to avoid breaking the UI
+                    pass
 
             st.divider()
 

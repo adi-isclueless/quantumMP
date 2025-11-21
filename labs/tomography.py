@@ -7,6 +7,7 @@ from qiskit.visualization import plot_bloch_multivector
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from io import BytesIO
+from certificate import store_simulation_data, save_figure_to_data
 
 
 def run():
@@ -317,6 +318,42 @@ def run():
         with col2:
             st.write("Reconstructed:")
             st.write(reco_rho)
+        
+        # Store simulation data for PDF report
+        from lab_config import LABS
+        lab_id = None
+        for name, config in LABS.items():
+            if config.get('module') == 'tomography':
+                lab_id = config['id']
+                break
+        
+        if lab_id:
+            metrics = {
+                'State Type': state_type,
+                'Number of Shots': str(shots),
+                'Fidelity': f"{fidelity:.4f}",
+                'Bloch X': f"{bloch_x:.4f}",
+                'Bloch Y': f"{bloch_y:.4f}",
+                'Bloch Z': f"{bloch_z:.4f}",
+            }
+            theo_sv = results['theoretical_state'].data
+            metrics['Theoretical α(|0⟩)'] = f"{theo_sv[0]:.4f}"
+            metrics['Theoretical β(|1⟩)'] = f"{theo_sv[1]:.4f}"
+            metrics['Reconstructed ρ₀₀'] = f"{rho[0, 0]:.4f}"
+            metrics['Reconstructed ρ₁₁'] = f"{rho[1, 1]:.4f}"
+            
+            # Aggregate measurements from all bases
+            all_measurements = {}
+            for basis in ['Z', 'X', 'Y']:
+                for state, count in results['measurements'][basis].items():
+                    all_measurements[f'{basis}_{state}'] = count
+            
+            figures = [
+                save_figure_to_data(fig_theo, 'Theoretical State (Bloch Sphere)'),
+                save_figure_to_data(fig_reco, 'Reconstructed State (Bloch Sphere)')
+            ]
+            
+            store_simulation_data(lab_id, metrics=metrics, measurements=all_measurements, figures=figures)
 
     st.markdown("---")
     st.write(

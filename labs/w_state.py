@@ -10,6 +10,7 @@ from qiskit.quantum_info import Statevector
 from qiskit.visualization import plot_histogram, plot_state_city
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
+from certificate import store_simulation_data, save_figure_to_data
 
 def create_w_state():
     """Exact 3-qubit W state with only standard gates (no leakage)."""
@@ -288,3 +289,47 @@ def run():
             st.error(f"W state not properly created. Expected 3 states, got {len(counts)}.")
     else:
         st.error("W state not properly created. Missing expected states.")
+    
+    # Store simulation data for PDF report
+    from lab_config import LABS
+    lab_id = None
+    for name, config in LABS.items():
+        if config.get('module') == 'w_state':
+            lab_id = config['id']
+            break
+    
+    if lab_id:
+        total = sum(counts.values())
+        metrics = {
+            'Number of Shots': str(shots),
+        }
+        for state in ['001', '010', '100']:
+            if state in counts:
+                prob = counts[state] / total
+                metrics[f'P(|{state}⟩)'] = f"{prob:.4f}"
+        
+        # Add single qubit probabilities
+        for i, (prob_0, prob_1) in single_qubit_results.items():
+            metrics[f'P(Qubit {i}=0)'] = f"{prob_0:.4f}"
+            metrics[f'P(Qubit {i}=1)'] = f"{prob_1:.4f}"
+        
+        figures = []
+        if show_circuit:
+            fig_circuit = qc.draw(output='mpl', fold=-1)
+            figures.append(save_figure_to_data(fig_circuit, 'W State Circuit'))
+            plt.close(fig_circuit)
+        figures.append(save_figure_to_data(fig_hist, 'Full State Measurements'))
+        if show_statevector:
+            state = Statevector.from_instruction(qc)
+            fig_state = plot_state_city(state)
+            figures.append(save_figure_to_data(fig_state, 'Statevector Representation'))
+            plt.close(fig_state)
+        
+        # Combine all measurements
+        all_measurements = dict(counts)
+        for i in range(3):
+            if i in single_qubit_results:
+                all_measurements[f'Qubit_{i}_0'] = int(single_qubit_results[i][0] * shots)
+                all_measurements[f'Qubit_{i}_1'] = int(single_qubit_results[i][1] * shots)
+        
+        store_simulation_data(lab_id, metrics=metrics, measurements=all_measurements, figures=figures)

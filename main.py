@@ -48,6 +48,53 @@ with st.sidebar:
     st.title("Quantum Virtual Labs")
     st.markdown("---")
     
+    with st.expander("About Quantum Virtual Labs"):
+        st.markdown("""
+        #### About the Platform  
+        The **Quantum Virtual Labs** initiative is a student-developed environment designed to make
+        quantum computing concepts **intuitive and visual** through interactive simulations.  
+
+        **Objectives:**
+        - Provide an accessible introduction to **quantum principles and measurements**  
+        - Demonstrate **entanglement, superposition, and quantum protocols**  
+        - Encourage experimentation with **quantum communication and error analysis**
+
+        #### Technical Stack
+        - **Frontend:** Streamlit  
+        - **Backend:** Qiskit (Aer Simulator)  
+        - **Language:** Python  
+        - **Visualization:** Matplotlib, Plotly  
+
+        #### Vision
+        > "To create a unified, accessible platform that enables students and educators to
+        explore quantum phenomena through simulation, experimentation, and visualization."
+
+        ---
+        """)
+        col1, col2, col3 = st.columns([2, 3, 2])
+        with col2:
+            try:
+                st.image("vesit_logo.png", width=200)
+            except:
+                st.info("VESIT Logo")
+        st.markdown("""
+        #### Credits  
+        **Mentor:**  
+        Dr. *Ranjan Bala Jain*, Department of Electronics and Telecommunication (EXTC)
+
+        **Developed by Students:**  
+        - *Aditya Upasani* — Computer Engineering (CMPN)  
+        - *Abhishek Vishwakarma* — Information Technology (IT)  
+        - *Yash Mahajan* — Computer Engineering (CMPN)  
+        - *Ryan D'Souza* — Computer Engineering (CMPN)
+
+        ---
+
+        © 2025 Quantum Virtual Labs • Developed at VESIT
+        """)
+    
+    st.markdown("---")
+    
     # User info
     st.markdown(f"**Welcome, {st.session_state.user_name or st.session_state.username}!**")
     if st.button("Logout", use_container_width=True):
@@ -156,7 +203,7 @@ if not st.session_state.current_lab:
 
                 st.markdown(card_html, unsafe_allow_html=True)
                 
-                if st.button(f"Start Lab", key=f"start_{lab_id}", use_container_width=True):
+                if st.button(f"Start Experiment", key=f"start_{lab_id}", use_container_width=True):
                     st.session_state.current_lab = lab_id
                     st.session_state.current_lab_section = "Theory"
                     st.rerun()
@@ -164,51 +211,7 @@ if not st.session_state.current_lab:
         st.markdown("---")
     
     # About section
-    with st.expander("About Quantum Virtual Labs"):
-        st.markdown("""
-        #### About the Platform  
-        The **Quantum Virtual Labs** initiative is a student-developed environment designed to make
-        quantum computing concepts **intuitive and visual** through interactive simulations.  
-        Each lab combines **Qiskit** for simulation and **Streamlit** for real-time visualization.
-
-        **Objectives:**
-        - Provide an accessible introduction to **quantum principles and measurements**  
-        - Demonstrate **entanglement, superposition, and quantum protocols**  
-        - Encourage experimentation with **quantum communication and error analysis**
-
-        #### Technical Stack
-        - **Frontend:** Streamlit  
-        - **Backend:** Qiskit (Aer Simulator)  
-        - **Language:** Python  
-        - **Visualization:** Matplotlib, Plotly  
-
-        #### Vision
-        > "To create a unified, accessible platform that enables students and educators to
-        explore quantum phenomena through simulation, experimentation, and visualization."
-
-        ---
-        """)
-        col1, col2, col3 = st.columns([3, 3, 2])
-        with col2:
-            try:
-                st.image("vesit_logo.png", width=200)
-            except:
-                st.info("VESIT Logo")
-        st.markdown("""
-        #### Credits  
-        **Mentor:**  
-        Dr. *Ranjan Bala Jain*, Department of Electronics and Telecommunication (EXTC)
-
-        **Developed by Students:**  
-        - *Aditya Upasani* — Computer Engineering (CMPN)  
-        - *Abhishek Vishwakarma* — Information Technology (IT)  
-        - *Yash Mahajan* — Computer Engineering (CMPN)  
-        - *Ryan D'Souza* — Computer Engineering (CMPN)
-
-        ---
-
-        © 2025 Quantum Virtual Labs • Developed at VESIT
-        """)
+    
 
 else:
     # Lab page
@@ -233,7 +236,7 @@ else:
     section = st.session_state.current_lab_section
     
     if section == "Theory":
-        st.header("Theory")
+        st.title("Theory")
         st.markdown(lab_config["theory"])
         
         # Navigation buttons

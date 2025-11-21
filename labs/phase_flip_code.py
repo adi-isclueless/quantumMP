@@ -10,6 +10,7 @@ from qiskit.quantum_info import Statevector
 from qiskit.visualization import plot_histogram
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
+from certificate import store_simulation_data, save_figure_to_data
 
 def run():
     import streamlit.components.v1 as components
@@ -398,3 +399,32 @@ def run():
     - The syndrome measurement is done in X basis using Hadamard gates
     - Ancilla qubits are used to measure parity without destroying the data qubits
     """)
+    
+    # Store simulation data for PDF report
+    from lab_config import LABS
+    lab_id = None
+    for name, config in LABS.items():
+        if config.get('module') == 'phase_flip_code':
+            lab_id = config['id']
+            break
+    
+    if lab_id:
+        total = sum(counts.values())
+        metrics = {
+            'Initial State': initial_state,
+            'Error Qubit': error_qubit,
+            'Number of Shots': str(shots),
+        }
+        for syndrome, count in counts.items():
+            prob = (count / total * 100) if total > 0 else 0
+            metrics[f'Syndrome {syndrome}'] = f"{prob:.1f}%"
+        
+        figures = []
+        if show_circuit:
+            figures.append(save_figure_to_data(fig_encode, 'Encoding Circuit'))
+            figures.append(save_figure_to_data(fig_syndrome, 'Complete Circuit'))
+            if error_qubit != "None":
+                figures.append(save_figure_to_data(fig_correct, 'Correction Circuit'))
+        figures.append(save_figure_to_data(fig_hist, 'Syndrome Measurement Results'))
+        
+        store_simulation_data(lab_id, metrics=metrics, measurements=counts, figures=figures)

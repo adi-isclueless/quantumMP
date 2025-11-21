@@ -4,6 +4,7 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit_aer import AerSimulator
 from qiskit.visualization import plot_histogram
 import matplotlib.pyplot as plt
+from certificate import store_simulation_data, save_figure_to_data
 
 
 def run():
@@ -132,6 +133,33 @@ def run():
             # Raw syndrome data
             with st.expander("View Raw Measurement Data"):
                 st.json(counts)
+            
+            # Store simulation data for PDF report
+            from lab_config import LABS
+            lab_id = None
+            for name, config in LABS.items():
+                if config.get('module') == 'error':
+                    lab_id = config['id']
+                    break
+            
+            if lab_id:
+                total_counts = sum(corrected_counts.values())
+                metrics = {
+                    'Error Rate': f"{error_rate:.2f}",
+                    'Number of Shots': str(shots),
+                    'Initial State': initial_state,
+                }
+                if initial_state not in ["+", "-"]:
+                    expected_state = "0" if initial_state in ["0", "+"] else "1"
+                    fidelity = corrected_counts.get(expected_state, 0) / total_counts
+                    metrics['Fidelity'] = f"{fidelity:.3f}"
+                
+                figures = [
+                    save_figure_to_data(fig_circuit, 'Error Correction Circuit'),
+                    save_figure_to_data(fig_hist, 'Corrected State Distribution')
+                ]
+                
+                store_simulation_data(lab_id, metrics=metrics, measurements=corrected_counts, figures=figures)
 
 
 if __name__ == "__main__":

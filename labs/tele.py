@@ -9,6 +9,7 @@ from qiskit import QuantumCircuit
 from qiskit.visualization import plot_bloch_multivector, plot_histogram, circuit_drawer
 import matplotlib.pyplot as plt
 import numpy as np
+from certificate import store_simulation_data, save_figure_to_data
 
 # ==================================================
 # FUNCTION: Run Quantum Teleportation Lab
@@ -118,6 +119,34 @@ def run():
     """)
 
     st.success("Quantum teleportation complete — Bob's qubit successfully receives Alice's state!")
+    
+    # Store simulation data for PDF report
+    from lab_config import LABS
+    lab_id = None
+    for name, config in LABS.items():
+        if config.get('module') == 'tele':
+            lab_id = config['id']
+            break
+    
+    if lab_id:
+        # Calculate probabilities from counts
+        total = sum(counts.values())
+        metrics = {
+            'Rotation Angle θ': f"{theta:.3f}",
+            'Phase Angle ϕ': f"{phi:.3f}",
+            'Number of Shots': str(shots),
+        }
+        for state, count in counts.items():
+            prob = (count / total * 100) if total > 0 else 0
+            metrics[f'P({state})'] = f"{prob:.2f}%"
+        
+        figures = [
+            save_figure_to_data(fig_circuit, 'Teleportation Circuit'),
+            save_figure_to_data(fig1, 'Measurement Outcomes'),
+            save_figure_to_data(bloch_fig, "Bob's Final State (Bloch Sphere)")
+        ]
+        
+        store_simulation_data(lab_id, metrics=metrics, measurements=counts, figures=figures)
 
     st.caption("Powered by Qiskit • Developed with Streamlit • © Quantum Virtual Labs 2025")
 

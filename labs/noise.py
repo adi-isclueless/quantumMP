@@ -5,6 +5,7 @@ from qiskit.quantum_info import state_fidelity, Statevector
 from qiskit.visualization import plot_histogram
 from qiskit_aer import AerSimulator
 from qiskit_aer.noise import NoiseModel, depolarizing_error, amplitude_damping_error, phase_damping_error
+from certificate import store_simulation_data, save_figure_to_data
 
 
 def run():
@@ -81,10 +82,13 @@ def run():
             st.markdown("### All Four Bell States Analysis")
             
             bell_states = ["Φ+", "Φ-", "Ψ+", "Ψ-"]
+            all_circuits = {}
             all_results = {}
             
+            # First, create all circuits and run measurements
             for bell_state in bell_states:
                 qc = bell_state_circuit(bell_state)
+                all_circuits[bell_state] = qc
                 qc_measure = qc.copy()
                 qc_measure.measure_all()
                 
@@ -94,7 +98,30 @@ def run():
                 counts = result.get_counts()
                 all_results[bell_state] = counts
             
-            # Display comparison
+            # Display all generation circuits first
+            st.markdown("#### Generation Circuits")
+            circuit_cols = st.columns(4)
+            for idx, (bell_state, qc) in enumerate(all_circuits.items()):
+                with circuit_cols[idx]:
+                    st.markdown(f"**|{bell_state}⟩ Circuit**")
+                    fig_circuit = qc.draw('mpl', fold=-1)
+                    st.pyplot(fig_circuit)
+                    plt.close()
+                    
+                    # Show circuit description
+                    if bell_state == "Φ+":
+                        st.caption("H(0), CNOT(0,1)")
+                    elif bell_state == "Φ-":
+                        st.caption("H(0), CNOT(0,1), Z(0)")
+                    elif bell_state == "Ψ+":
+                        st.caption("H(0), CNOT(0,1), X(1)")
+                    else:  # Ψ-
+                        st.caption("H(0), CNOT(0,1), X(1), Z(0)")
+            
+            st.markdown("---")
+            
+            # Then display measurement results
+            st.markdown("#### Measurement Results")
             cols = st.columns(4)
             for idx, (bell_state, counts) in enumerate(all_results.items()):
                 with cols[idx]:
@@ -120,6 +147,7 @@ def run():
             
             # Correlation analysis
             if show_correlations:
+                st.markdown("---")
                 st.markdown("### Correlation Analysis")
                 st.markdown("""
                 **Bell State Correlations:**
@@ -133,6 +161,43 @@ def run():
                 
                 **Key Property:** Measuring one qubit immediately determines the other qubit's state.
                 """)
+            
+            # Store simulation data for PDF report
+            from lab_config import LABS
+            lab_id = None
+            for name, config in LABS.items():
+                if config.get('module') == 'noise':
+                    lab_id = config['id']
+                    break
+            
+            if lab_id:
+                # Aggregate all measurements
+                all_measurements = {}
+                for bell_state, counts in all_results.items():
+                    for state, count in counts.items():
+                        key = f"{bell_state}_{state}"
+                        all_measurements[key] = count
+                
+                metrics = {
+                    'Analysis Type': 'All Bell States',
+                    'Number of Shots': str(shots),
+                    'Total States Analyzed': '4'
+                }
+                
+                # Collect all figures
+                figures = []
+                for bell_state, qc in all_circuits.items():
+                    fig_circuit = qc.draw('mpl', fold=-1)
+                    figures.append(save_figure_to_data(fig_circuit, f'|{bell_state}⟩ Circuit'))
+                    plt.close(fig_circuit)
+                
+                for bell_state, counts in all_results.items():
+                    fig, ax = plt.subplots(figsize=(3, 2))
+                    plot_histogram(counts, ax=ax)
+                    figures.append(save_figure_to_data(fig, f'|{bell_state}⟩ Measurements'))
+                    plt.close(fig)
+                
+                store_simulation_data(lab_id, metrics=metrics, measurements=all_measurements, figures=figures)
         else:
             # Single Bell state analysis
             qc = bell_state_circuit(state_choice)
@@ -229,6 +294,37 @@ def run():
                             st.success("Perfect anti-correlation confirmed! Only |01⟩ and |10⟩ observed.")
                         else:
                             st.warning(f"Expected {{01, 10}}, got {observed}")
+                
+                # Store simulation data for PDF report
+                from lab_config import LABS
+                lab_id = None
+                for name, config in LABS.items():
+                    if config.get('module') == 'noise':
+                        lab_id = config['id']
+                        break
+                
+                if lab_id:
+                    # Calculate probabilities
+                    total = sum(counts.values())
+                    metrics = {
+                        'Bell State': f"|{state_choice}⟩",
+                        'Number of Shots': str(shots),
+                    }
+                    for state, count in counts.items():
+                        prob = (count / total * 100) if total > 0 else 0
+                        metrics[f'P(|{state}⟩)'] = f"{prob:.2f}%"
+                    
+                    # Get ideal probabilities
+                    ideal_probs = state_ideal.probabilities_dict()
+                    for state, prob in ideal_probs.items():
+                        metrics[f'Ideal P(|{state}⟩)'] = f"{prob*100:.2f}%"
+                    
+                    figures = [
+                        save_figure_to_data(fig_circuit, f'|{state_choice}⟩ Circuit'),
+                        save_figure_to_data(fig, 'Measurement Results')
+                    ]
+                    
+                    store_simulation_data(lab_id, metrics=metrics, measurements=counts, figures=figures)
     
     # Tab 2: Noise Effects (existing functionality)
     with tab2:

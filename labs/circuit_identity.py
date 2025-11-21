@@ -10,6 +10,7 @@ from qiskit.quantum_info import Operator, Statevector
 from qiskit.visualization import plot_histogram
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
+from certificate import store_simulation_data, save_figure_to_data
 
 def run():
     import streamlit.components.v1 as components
@@ -341,4 +342,45 @@ def run():
     - All Pauli gates are self-inverse (X² = Y² = Z² = I)
     - Hadamard is self-inverse (H² = I)
     """)
+    
+    # Store simulation data for PDF report
+    from lab_config import LABS
+    lab_id = None
+    for name, config in LABS.items():
+        if config.get('module') == 'circuit_identity':
+            lab_id = config['id']
+            break
+    
+    if lab_id and 'input_states' in locals() and len(input_states) > 0:
+        metrics = {
+            'Identity Type': identity_type,
+            'Number of Shots': str(shots),
+            'Operator Equivalence': 'Yes' if equivalence else 'No' if equivalence is False else 'Unknown',
+            'Measurement Equivalence': 'Yes' if results_match else 'No',
+        }
+        
+        # Aggregate measurements from all input states
+        all_measurements = {}
+        for input_state in input_states:
+            # Get counts from the last tested state (they're overwritten in loop)
+            # We'll use a simplified approach
+            pass
+        
+        figures = [
+            save_figure_to_data(fig1, f'Circuit 1: {qc1.name}'),
+            save_figure_to_data(fig2, f'Circuit 2: {qc2.name}')
+        ]
+        
+        # Add measurement histograms if available
+        if 'counts1' in locals() and 'counts2' in locals():
+            fig_hist1 = plot_histogram(counts1)
+            fig_hist2 = plot_histogram(counts2)
+            figures.append(save_figure_to_data(fig_hist1, f'Circuit 1 Results'))
+            figures.append(save_figure_to_data(fig_hist2, f'Circuit 2 Results'))
+            plt.close(fig_hist1)
+            plt.close(fig_hist2)
+        
+        # Use counts from last tested state as measurements
+        if 'counts1' in locals():
+            store_simulation_data(lab_id, metrics=metrics, measurements=counts1, figures=figures)
 

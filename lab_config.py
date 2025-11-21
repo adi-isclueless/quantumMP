@@ -13,35 +13,34 @@ LABS = {
         "difficulty": "Beginner",
         "theory": """
 
-
-### 1. Quantum Bases
+## 1. Quantum Bases
 
 A **basis** is a set of orthogonal states that can be used to describe any quantum state. The most common bases are:
 
-- **Z-basis (Computational basis)**: {|0⟩, |1⟩}
-- **X-basis (Hadamard basis)**: {|+⟩, |-⟩} where |+⟩ = (|0⟩ + |1⟩)/√2 and |-⟩ = (|0⟩ - |1⟩)/√2
-- **Y-basis**: {|+i⟩, |-i⟩} where |+i⟩ = (|0⟩ + i|1⟩)/√2 and |-i⟩ = (|0⟩ - i|1⟩)/√2
+- **Z-basis (Computational basis)**: {|0>, |1>}
+- **X-basis (Hadamard basis)**: {|+>, |->} where |+> = (|0> + |1>)/√2 and |-> = (|0> - |1>)/√2
+- **Y-basis**: {|+i>, |-i>} where |+i> = (|0> + i|1>)/√2 and |-i> = (|0> - i|1>)/√2
 
-### 2. Measurement Postulate
+## 2. Measurement Postulate
 
 When a quantum state is measured in a particular basis:
 1. The state **collapses** to one of the basis states
 2. The probability of collapsing to each basis state is given by the squared magnitude of the amplitude
 3. After measurement, the state is in the measured basis state
 
-### 3. States Used in This Lab
+## 3. States Used in This Lab
 
-- **|+⟩ state**: Created by applying a Hadamard gate to |0⟩
-  - In Z-basis: 50% probability of |0⟩, 50% probability of |1⟩
-  - In X-basis: 100% probability of |+⟩ (deterministic)
-  - In Y-basis: 50% probability of |+i⟩, 50% probability of |-i⟩
+- **|+> state**: Created by applying a Hadamard gate to |0>
+  - In Z-basis: 50% probability of |0>, 50% probability of |1>
+  - In X-basis: 100% probability of |+> (deterministic)
+  - In Y-basis: 50% probability of |+i>, 50% probability of |-i>
 
-- **|i⟩ state**: Created by applying H and S gates to |0⟩
-  - In Z-basis: 50% probability of |0⟩, 50% probability of |1⟩
-  - In X-basis: 50% probability of |+⟩, 50% probability of |-⟩
-  - In Y-basis: 100% probability of |+i⟩ (deterministic)
+- **|i> state**: Created by applying H and S gates to |0>
+  - In Z-basis: 50% probability of |0>, 50% probability of |1>
+  - In X-basis: 50% probability of |+>, 50% probability of |->
+  - In Y-basis: 100% probability of |+i> (deterministic)
 
-### 4. Bloch Sphere Representation
+## 4. Bloch Sphere Representation
 
 The Bloch sphere is a geometric representation of a quantum state:
 - **Z-basis measurements**: Along the Z-axis (north/south pole)
@@ -56,28 +55,28 @@ The Bloch sphere is a geometric representation of a quantum state:
 
 ## Exercises
 
-1. Prepare the |+⟩ state and measure it in the Z-basis. What probabilities do you observe?
-2. Measure the |+⟩ state in the X-basis. Why is the result deterministic?
-3. Compare measurements of |i⟩ in different bases. What patterns do you notice?
+1. Prepare the |+> state and measure it in the Z-basis. What probabilities do you observe?
+2. Measure the |+> state in the X-basis. Why is the result deterministic?
+3. Compare measurements of |i> in different bases. What patterns do you notice?
         """,
         "quiz": [
             {
-                "question": "What happens when you measure the |+⟩ state in the Z-basis?",
-                "options": ["Always |0⟩", "Always |1⟩", "50% |0⟩, 50% |1⟩", "100% |+⟩"],
+                "question": "What happens when you measure the |+> state in the Z-basis?",
+                "options": ["Always |0>", "Always |1>", "50% |0>, 50% |1>", "100% |+>"],
                 "correct": 2,
-                "explanation": "The |+⟩ state is an equal superposition of |0⟩ and |1⟩, so measuring in Z-basis gives equal probabilities."
+                "explanation": "The |+> state is an equal superposition of |0> and |1>, so measuring in Z-basis gives equal probabilities."
             },
             {
-                "question": "What is the result of measuring |+⟩ in the X-basis?",
-                "options": ["Random", "50% |+⟩, 50% |-⟩", "100% |+⟩", "50% |0⟩, 50% |1⟩"],
+                "question": "What is the result of measuring |+> in the X-basis?",
+                "options": ["Random", "50% |+>, 50% |->", "100% |+>", "50% |0>, 50% |1>"],
                 "correct": 2,
-                "explanation": "Since |+⟩ is already an eigenstate of the X-basis, it always measures as |+⟩."
+                "explanation": "Since |+> is already an eigenstate of the X-basis, it always measures as |+>."
             },
             {
-                "question": "Which gate creates the |i⟩ state from |0⟩?",
+                "question": "Which gate creates the |i> state from |0>?",
                 "options": ["H only", "H then S", "X then H", "Z then H"],
                 "correct": 1,
-                "explanation": "The |i⟩ state is created by applying Hadamard (H) followed by Phase (S) gate."
+                "explanation": "The |i> state is created by applying Hadamard (H) followed by Phase (S) gate."
             },
             {
                 "question": "What is the key difference between Z and X basis measurements?",
@@ -102,46 +101,45 @@ The Bloch sphere is a geometric representation of a quantum state:
         "difficulty": "Beginner",
         "theory": """
 
-### Introduction
+## Introduction
 
 Random number generation is crucial for cryptography, simulations, and security applications. Classical computers can only generate **pseudo-random** numbers using algorithms, which are deterministic and predictable if you know the algorithm and seed. Quantum computers can generate **truly random** numbers based on fundamental quantum uncertainty.
 
-
-### 1. Quantum Superposition
+## 1. Quantum Superposition
 
 When a qubit is in a superposition state:
-- |ψ⟩ = α|0⟩ + β|1⟩
-- |α|² is the probability of measuring |0⟩
-- |β|² is the probability of measuring |1⟩
+- |ψ> = α|0> + β|1>
+- |α|² is the probability of measuring |0>
+- |β|² is the probability of measuring |1>
 - For a balanced superposition: |α|² = |β|² = 0.5
 
-### 2. Hadamard Gate
+## 2. Hadamard Gate
 
 The Hadamard gate creates a balanced superposition:
-- H|0⟩ = (|0⟩ + |1⟩)/√2 = |+⟩
-- H|1⟩ = (|0⟩ - |1⟩)/√2 = |-⟩
+- H|0> = (|0> + |1>)/√2 = |+>
+- H|1> = (|0> - |1>)/√2 = |->
 
-### 3. Quantum Randomness
+## 3. Quantum Randomness
 
 Quantum randomness comes from:
 - **Heisenberg Uncertainty Principle**: Cannot predict measurement outcomes
 - **Wave function collapse**: Measurement forces a random collapse
 - **No hidden variables**: The randomness is fundamental, not due to our ignorance
 
-### 4. QRNG Circuit
+## 4. QRNG Circuit
 
-1. Initialize qubits in |0⟩ state
+1. Initialize qubits in |0> state
 2. Apply Hadamard gate to each qubit (creates superposition)
 3. Measure all qubits
 4. Convert binary result to decimal number
 
-### 5. Statistical Properties
+## 5. Statistical Properties
 
 - **Uniformity**: All outcomes should be equally likely
 - **Independence**: Each measurement is independent
 - **Unpredictability**: Cannot predict next outcome from previous ones
 
-### 6. Entropy Measures
+## 6. Entropy Measures
 
 - **Min-Entropy (H∞)**: Worst-case unpredictability (most important for cryptography)
 - **Shannon Entropy (H)**: Average information content
@@ -178,7 +176,7 @@ Quantum randomness comes from:
                 "question": "Which gate is used to create superposition in a QRNG?",
                 "options": ["X gate", "Z gate", "Hadamard gate", "CNOT gate"],
                 "correct": 2,
-                "explanation": "The Hadamard gate creates an equal superposition of |0⟩ and |1⟩ states."
+                "explanation": "The Hadamard gate creates an equal superposition of |0> and |1> states."
             },
             {
                 "question": "What is the key advantage of QRNGs over classical RNGs?",
@@ -209,26 +207,26 @@ Quantum randomness comes from:
         "difficulty": "Intermediate",
         "theory": """
 
-### Introduction
+## Introduction
 
 Parity checking is a fundamental operation in both classical and quantum computing. It determines whether the number of 1s in a binary string is even or odd. In quantum computing, we use an **ancilla qubit** (helper qubit) to compute parity without directly measuring the input qubits.
 
-### 1. Parity Definition
+## 1. Parity Definition
 
 - **Even parity**: Number of 1s is even (0, 2, 4, ...)
 - **Odd parity**: Number of 1s is odd (1, 3, 5, ...)
 
-### 2. Ancilla Qubit
+## 2. Ancilla Qubit
 
 An **ancilla qubit** is an auxiliary qubit used to:
 - Store intermediate computational results
 - Perform computations without disturbing input qubits
 - Enable reversible quantum operations
 
-### 3. Parity Check Circuit
+## 3. Parity Check Circuit
 
 For a 3-qubit input (q0, q1, q2):
-1. Initialize ancilla qubit (q3) in |0⟩
+1. Initialize ancilla qubit (q3) in |0>
 2. Apply CNOT from each input qubit to ancilla:
    - CNOT(q0, q3)
    - CNOT(q1, q3)
@@ -237,20 +235,20 @@ For a 3-qubit input (q0, q1, q2):
    - Result 0 = Even parity
    - Result 1 = Odd parity
 
-### 4. CNOT Gate Operation
+## 4. CNOT Gate Operation
 
 CNOT (Controlled-NOT) gate:
-- If control qubit is |0⟩: target qubit unchanged
-- If control qubit is |1⟩: target qubit flipped (X gate applied)
+- If control qubit is |0>: target qubit unchanged
+- If control qubit is |1>: target qubit flipped (X gate applied)
 
-### 5. How It Works
+## 5. How It Works
 
-- Each CNOT flips the ancilla if input qubit is |1⟩
-- Even number of flips → ancilla returns to |0⟩
-- Odd number of flips → ancilla becomes |1⟩
+- Each CNOT flips the ancilla if input qubit is |1>
+- Even number of flips → ancilla returns to |0>
+- Odd number of flips → ancilla becomes |1>
 - Ancilla state encodes the parity information
 
-### 6. Reversibility
+## 6. Reversibility
 
 - The input qubits are not measured directly
 - Their states are preserved (in ideal case)
@@ -272,10 +270,10 @@ CNOT (Controlled-NOT) gate:
 
 ## Example
 
-For input |101⟩:
-- q0=1: CNOT flips ancilla to |1⟩
-- q1=0: CNOT does nothing (ancilla stays |1⟩)
-- q2=1: CNOT flips ancilla back to |0⟩
+For input |101>:
+- q0=1: CNOT flips ancilla to |1>
+- q1=0: CNOT does nothing (ancilla stays |1>)
+- q2=1: CNOT flips ancilla back to |0>
 - Result: Even parity (two 1s)
         """,
         "quiz": [
@@ -289,7 +287,7 @@ For input |101⟩:
                 "question": "What does the ancilla qubit store in a parity check?",
                 "options": ["The input state", "The parity (even/odd)", "The measurement result", "Random data"],
                 "correct": 1,
-                "explanation": "The ancilla qubit stores the parity information: |0⟩ for even, |1⟩ for odd."
+                "explanation": "The ancilla qubit stores the parity information: |0> for even, |1> for odd."
             },
             {
                 "question": "How many CNOT gates are needed for a 3-qubit parity check?",
@@ -298,10 +296,10 @@ For input |101⟩:
                 "explanation": "One CNOT gate from each input qubit to the ancilla, so 3 CNOT gates for 3 input qubits."
             },
             {
-                "question": "What is the parity of |101⟩?",
+                "question": "What is the parity of |101>?",
                 "options": ["Even", "Odd", "Cannot determine", "Depends on measurement"],
                 "correct": 0,
-                "explanation": "|101⟩ has two 1s, which is an even number, so it has even parity."
+                "explanation": "|101> has two 1s, which is an even number, so it has even parity."
             },
             {
                 "question": "Why is the ancilla approach useful?",
@@ -322,44 +320,47 @@ For input |101⟩:
 
 ## Part 1: Bell State Analysis
 
-### 1. The Four Bell States
+## 1. The Four Bell States
 
 Bell states are four maximally entangled two-qubit states:
 
-- **|Φ⁺⟩ = (|00⟩ + |11⟩)/√2**: Perfect positive correlation
-- **|Φ⁻⟩ = (|00⟩ - |11⟩)/√2**: Perfect positive correlation (phase difference)
-- **|Ψ⁺⟩ = (|01⟩ + |10⟩)/√2**: Perfect negative correlation (anti-correlation)
-- **|Ψ⁻⟩ = (|01⟩ - |10⟩)/√2**: Perfect negative correlation (phase difference)
+- **|Φ+> = (|00> + |11>)/√2**: Perfect positive correlation
+- **|Φ-> = (|00> - |11>)/√2**: Perfect positive correlation (phase difference)
+- **|Ψ+> = (|01> + |10>)/√2**: Perfect negative correlation (anti-correlation)
+- **|Ψ-> = (|01> - |10>)/√2**: Perfect negative correlation (phase difference)
 
-### 2. Creation Circuits
+## 2. Creation Circuits
 
-**|Φ⁺⟩**: H on qubit 0, then CNOT(0,1)
-**|Φ⁻⟩**: H on qubit 0, CNOT(0,1), then Z on qubit 0
-**|Ψ⁺⟩**: H on qubit 0, CNOT(0,1), then X on qubit 1
-**|Ψ⁻⟩**: H on qubit 0, CNOT(0,1), then X on qubit 1 and Z on qubit 0
+**|Φ+>**: H on qubit 0, then CNOT(0,1)
 
-### 3. Measurement Correlations
+**|Φ->**: H on qubit 0, CNOT(0,1), then Z on qubit 0
 
-**|Φ⁺⟩ and |Φ⁻⟩:**
+**|Ψ+>**: H on qubit 0, CNOT(0,1), then X on qubit 1
+
+**|Ψ->**: H on qubit 0, CNOT(0,1), then X on qubit 1 and Z on qubit 0
+
+## 3. Measurement Correlations
+
+**|Φ+> and |Φ->:**
 - Perfect positive correlation
-- Measurement outcomes: |00⟩ or |11⟩ only
-- If one qubit is |0⟩, the other must be |0⟩
-- If one qubit is |1⟩, the other must be |1⟩
+- Measurement outcomes: |00> or |11> only
+- If one qubit is |0>, the other must be |0>
+- If one qubit is |1>, the other must be |1>
 
-**|Ψ⁺⟩ and |Ψ⁻⟩:**
+**|Ψ+> and |Ψ->:**
 - Perfect negative correlation (anti-correlation)
-- Measurement outcomes: |01⟩ or |10⟩ only
-- If one qubit is |0⟩, the other must be |1⟩
-- If one qubit is |1⟩, the other must be |0⟩
+- Measurement outcomes: |01> or |10> only
+- If one qubit is |0>, the other must be |1>
+- If one qubit is |1>, the other must be |0>
 
-### 4. Bell State Properties
+## 4. Bell State Properties
 
 - **Maximal Entanglement**: All Bell states are maximally entangled
 - **Non-locality**: Demonstrate quantum non-locality
 - **Perfect Correlations**: Measuring one qubit determines the other
 - **Basis**: Bell states form an orthonormal basis for two-qubit space
 
-### 5. Applications
+## 5. Applications
 
 - Quantum teleportation
 - Superdense coding
@@ -373,54 +374,54 @@ Quantum states are fragile and easily affected by their environment. This intera
 
 ## Key Concepts
 
-### 1. Bell States
+## 1. Bell States
 
 Bell states are maximally entangled two-qubit states:
-- |Φ⁺⟩ = (|00⟩ + |11⟩)/√2
-- |Φ⁻⟩ = (|00⟩ - |11⟩)/√2
-- |Ψ⁺⟩ = (|01⟩ + |10⟩)/√2
-- |Ψ⁻⟩ = (|01⟩ - |10⟩)/√2
+- |Φ+> = (|00> + |11>)/√2
+- |Φ-> = (|00> - |11>)/√2
+- |Ψ+> = (|01> + |10>)/√2
+- |Ψ-> = (|01> - |10>)/√2
 
-### 2. Entanglement
+## 2. Entanglement
 
 - **Maximal entanglement**: Bell states have maximum entanglement
 - **Non-locality**: Measurement on one qubit instantly affects the other
 - **Correlation**: Perfect correlation between qubits
 
-### 3. Types of Noise
+## 3. Types of Noise
 
-#### Depolarizing Noise
+### Depolarizing Noise
 - Randomly applies X, Y, or Z gates with equal probability
 - Causes complete decoherence at high strength
 - Most general type of noise
 
-#### Amplitude Damping
+### Amplitude Damping
 - Models energy dissipation
-- |1⟩ state decays to |0⟩
+- |1> state decays to |0>
 - Important for physical qubits
 
-#### Phase Damping
+### Phase Damping
 - Causes loss of phase information
 - Preserves energy but destroys coherence
 - Also called dephasing
 
-### 4. Fidelity
+## 4. Fidelity
 
 Fidelity measures how close a noisy state is to the ideal state:
 - Fidelity = 1: Perfect match
 - Fidelity = 0: Completely different
 - Higher fidelity = better state preservation
 
-### 5. Noise Effects on Bell States
+## 5. Noise Effects on Bell States
 
 - **Depolarizing**: Gradually destroys all correlations
 - **Amplitude damping**: Causes asymmetric decay
 - **Phase damping**: Destroys phase coherence but preserves some correlations
 
-### 6. Measurement Outcomes
+## 6. Measurement Outcomes
 
-- **Ideal Bell state**: Perfect correlations (e.g., |00⟩ and |11⟩ only)
-- **Noisy state**: Introduces errors (e.g., |01⟩ and |10⟩ appear)
+- **Ideal Bell state**: Perfect correlations (e.g., |00> and |11> only)
+- **Noisy state**: Introduces errors (e.g., |01> and |10> appear)
 - **Error rate**: Increases with noise strength
 
 ## Applications
@@ -457,10 +458,10 @@ Fidelity measures how close a noisy state is to the ideal state:
                 "explanation": "Fidelity measures how close a quantum state is to an ideal state, ranging from 0 to 1."
             },
             {
-                "question": "How does amplitude damping affect |1⟩?",
-                "options": ["No effect", "Decays to |0⟩", "Becomes |+⟩", "Becomes |-⟩"],
+                "question": "How does amplitude damping affect |1>?",
+                "options": ["No effect", "Decays to |0>", "Becomes |+>", "Becomes |->"],
                 "correct": 1,
-                "explanation": "Amplitude damping models energy dissipation, causing |1⟩ to decay to |0⟩."
+                "explanation": "Amplitude damping models energy dissipation, causing |1> to decay to |0>."
             },
             {
                 "question": "Why is noise a problem for quantum computing?",
@@ -479,12 +480,11 @@ Fidelity measures how close a noisy state is to the ideal state:
         "difficulty": "Advanced",
         "theory": """
 
-### Introduction
+## Introduction
 
 BB84 is the first quantum key distribution (QKD) protocol, invented by Charles Bennett and Gilles Brassard in 1984. It allows two parties (Alice and Bob) to establish a shared secret key using quantum mechanics, with guaranteed detection of any eavesdropping.
 
-
-### 1. Protocol Steps
+## 1. Protocol Steps
 
 1. **Alice prepares qubits**: Randomly chooses bit (0 or 1) and basis (Z or X)
 2. **Quantum transmission**: Sends qubits to Bob through quantum channel
@@ -493,30 +493,30 @@ BB84 is the first quantum key distribution (QKD) protocol, invented by Charles B
 5. **Error estimation**: Sacrifice some bits to estimate error rate (QBER)
 6. **Privacy amplification**: Use remaining bits as secret key
 
-### 2. Quantum Bases
+## 2. Quantum Bases
 
-- **Z-basis (computational)**: {|0⟩, |1⟩}
-- **X-basis (Hadamard)**: {|+⟩, |-⟩}
+- **Z-basis (computational)**: {|0>, |1>}
+- **X-basis (Hadamard)**: {|+>, |->}
 
-### 3. Security Principle
+## 3. Security Principle
 
 - **No-cloning theorem**: Cannot perfectly copy quantum states
 - **Measurement disturbance**: Measuring disturbs the state
 - **Eavesdropping detection**: Any interception introduces errors
 
-### 4. Quantum Bit Error Rate (QBER)
+## 4. Quantum Bit Error Rate (QBER)
 
 - Measures percentage of errors in sifted key
 - QBER < 11%: Channel is secure
 - QBER ≥ 11%: Possible eavesdropping detected
 
-### 5. Sifting Efficiency
+## 5. Sifting Efficiency
 
 - Only ~50% of bits survive basis reconciliation
 - This is expected and necessary for security
 - Remaining bits form the sifted key
 
-### 6. Eavesdropping (Eve)
+## 6. Eavesdropping (Eve)
 
 If Eve intercepts:
 - Must measure qubits (disturbs them)
@@ -586,13 +586,13 @@ If Eve intercepts:
         "category": "Quantum Communication Protocols",
         "difficulty": "Intermediate",
         "theory": """
-### Introduction
+## Introduction
 
 Superdense coding is a quantum communication protocol that allows Alice to transmit **two classical bits** of information to Bob using only **one qubit**, by leveraging a shared entangled Bell pair. This demonstrates the power of quantum entanglement for communication.
 
-### 1. Protocol Setup
+## 1. Protocol Setup
 
-1. **Shared entanglement**: Alice and Bob share a Bell pair |Φ⁺⟩ = (|00⟩ + |11⟩)/√2
+1. **Shared entanglement**: Alice and Bob share a Bell pair |Φ+> = (|00> + |11>)/√2
 2. **Alice encodes**: Applies one of four operations to her qubit based on 2-bit message:
    - 00: Identity (I) - no operation
    - 01: X gate
@@ -601,15 +601,15 @@ Superdense coding is a quantum communication protocol that allows Alice to trans
 3. **Alice sends**: Sends her qubit to Bob
 4. **Bob decodes**: Performs Bell measurement to recover the 2-bit message
 
-### 2. Encoding Operations
+## 2. Encoding Operations
 
 The four operations transform the Bell state:
-- I: |Φ⁺⟩ → |Φ⁺⟩
-- X: |Φ⁺⟩ → |Ψ⁺⟩
-- Z: |Φ⁺⟩ → |Φ⁻⟩
-- XZ: |Φ⁺⟩ → |Ψ⁻⟩
+- I: |Φ+> → |Φ+>
+- X: |Φ+> → |Ψ+>
+- Z: |Φ+> → |Φ->
+- XZ: |Φ+> → |Ψ->
 
-### 3. Bell Measurement
+## 3. Bell Measurement
 
 Bob performs:
 1. CNOT(Alice's qubit, Bob's qubit)
@@ -617,24 +617,24 @@ Bob performs:
 3. Measure both qubits
 4. Measurement result directly gives the 2-bit message
 
-### 4. Information Advantage
+## 4. Information Advantage
 
 - **Classical**: 1 bit per qubit (at most)
 - **Superdense coding**: 2 bits per qubit
 - **Factor of 2 improvement**: But requires shared entanglement
 
-### 5. Entanglement as Resource
+## 5. Entanglement as Resource
 
 - Entanglement must be established beforehand
 - This requires quantum communication
 - The advantage is in **communication efficiency**, not total resources
 
-### 6. Measurement Results
+## 6. Measurement Results
 
-- |00⟩ → Message was 00
-- |01⟩ → Message was 01
-- |10⟩ → Message was 10
-- |11⟩ → Message was 11
+- |00> → Message was 00
+- |01> → Message was 01
+- |10> → Message was 10
+- |11> → Message was 11
 
 ## Applications
 
@@ -698,27 +698,27 @@ Bob performs:
         "category": "Quantum Communication Protocols",
         "difficulty": "Advanced",
         "theory": """
-### Introduction
+## Introduction
 
 Quantum teleportation is a protocol that allows Alice to transfer an unknown quantum state to Bob using a shared entangled pair and classical communication. Despite its name, it doesn't transfer matter or energy faster than light - it transfers quantum information.
 
-### 1. Protocol Steps
+## 1. Protocol Steps
 
-1. **Shared entanglement**: Alice and Bob share a Bell pair |Φ⁺⟩ = (|00⟩ + |11⟩)/√2
-2. **State to teleport**: Alice has qubit in unknown state |ψ⟩ = α|0⟩ + β|1⟩
+1. **Shared entanglement**: Alice and Bob share a Bell pair |Φ+> = (|00> + |11>)/√2
+2. **State to teleport**: Alice has qubit in unknown state |ψ> = α|0> + β|1>
 3. **Bell measurement**: Alice performs Bell measurement on her two qubits
 4. **Classical communication**: Alice sends 2 classical bits to Bob
 5. **Correction**: Bob applies correction gates based on Alice's message
-6. **Result**: Bob's qubit is now in state |ψ⟩
+6. **Result**: Bob's qubit is now in state |ψ>
 
-### 2. Bell Measurement
+## 2. Bell Measurement
 
 Alice measures her qubits in Bell basis:
 - Measures both qubits
 - Gets one of four outcomes: 00, 01, 10, 11
 - Each outcome corresponds to a different Bell state
 
-### 3. Correction Operations
+## 3. Correction Operations
 
 Based on Alice's measurement result, Bob applies:
 - 00: No operation (I)
@@ -726,21 +726,21 @@ Based on Alice's measurement result, Bob applies:
 - 10: Z gate
 - 11: X then Z gate
 
-### 4. Why It Works
+## 4. Why It Works
 
 - Entanglement creates correlations
 - Bell measurement projects onto entangled states
 - Classical bits communicate which correction is needed
 - Correction restores the original state
 
-### 5. Important Properties
+## 5. Important Properties
 
 - **No cloning**: Original state is destroyed (no-cloning theorem)
 - **Classical communication**: Requires 2 classical bits
 - **No faster-than-light**: Classical communication limits speed
 - **Perfect in theory**: Ideal case has 100% fidelity
 
-### 6. Resource Requirements
+## 6. Resource Requirements
 
 - 1 shared Bell pair (entanglement)
 - 2 classical bits (communication)
@@ -810,37 +810,37 @@ Based on Alice's measurement result, Bob applies:
         "difficulty": "Advanced",
         "theory": """
 
-### 1. The Problem
+## 1. The Problem
 
-- We have many copies of an unknown quantum state |ψ⟩
+- We have many copies of an unknown quantum state |ψ>
 - We want to determine the state completely
 - Single measurement doesn't give full information
 - Need measurements in multiple bases
 
-### 2. Measurement Bases
+## 2. Measurement Bases
 
 For a single qubit, we need measurements in three bases:
-- **Z-basis**: {|0⟩, |1⟩} - measures σz
-- **X-basis**: {|+⟩, |-⟩} - measures σx
-- **Y-basis**: {|+i⟩, |-i⟩} - measures σy
+- **Z-basis**: {|0>, |1>} - measures σz
+- **X-basis**: {|+>, |->} - measures σx
+- **Y-basis**: {|+i>, |-i>} - measures σy
 
-### 3. Density Matrix
+## 3. Density Matrix
 
 A quantum state can be represented as a density matrix:
-- **Pure state**: |ψ⟩⟨ψ|
-- **Mixed state**: Σᵢ pᵢ|ψᵢ⟩⟨ψᵢ|
+- **Pure state**: |ψ>⟨ψ|
+- **Mixed state**: Σᵢ pᵢ|ψᵢ>⟨ψᵢ|
 - Contains all information about the state
 
-### 4. Reconstruction Process
+## 4. Reconstruction Process
 
 1. **Prepare many copies** of the state
-2. **Measure in Z-basis**: Get probabilities P(|0⟩) and P(|1⟩)
-3. **Measure in X-basis**: Get probabilities P(|+⟩) and P(|-⟩)
-4. **Measure in Y-basis**: Get probabilities P(|+i⟩) and P(|-i⟩)
+2. **Measure in Z-basis**: Get probabilities P(|0>) and P(|1>)
+3. **Measure in X-basis**: Get probabilities P(|+>) and P(|->)
+4. **Measure in Y-basis**: Get probabilities P(|+i>) and P(|-i>)
 5. **Reconstruct density matrix**: From measurement statistics
 6. **Verify**: Compare with theoretical state
 
-### 5. Bloch Vector
+## 5. Bloch Vector
 
 The state can be represented on the Bloch sphere:
 - **x-component**: From X-basis measurements
@@ -848,7 +848,7 @@ The state can be represented on the Bloch sphere:
 - **z-component**: From Z-basis measurements
 - **Vector length**: Indicates purity (1 for pure states)
 
-### 6. Fidelity
+## 6. Fidelity
 
 Fidelity measures reconstruction quality:
 - Fidelity = Tr(√(√ρₜₕₑₒᵣᵧ ρₑₓₚ√ρₜₕₑₒᵣᵧ)²)
@@ -918,35 +918,35 @@ Fidelity measures reconstruction quality:
         "difficulty": "Beginner",
         "theory": """
 
-### 1. Product State Superposition
+## 1. Product State Superposition
 
 When we apply Hadamard gates to n qubits independently:
-- Each qubit becomes (|0⟩ + |1⟩)/√2
+- Each qubit becomes (|0> + |1>)/√2
 - The combined state is a product of individual superpositions
-- Result: (1/√2ⁿ) Σ|x⟩ for all x from 0 to 2ⁿ-1
+- Result: (1/√2ⁿ) Σ|x> for all x from 0 to 2ⁿ-1
 
-### 2. Equal Superposition
+## 2. Equal Superposition
 
 For n qubits, we get:
-- |ψ⟩ = (1/√2ⁿ) (|0...0⟩ + |0...1⟩ + ... + |1...1⟩)
+- |ψ> = (1/√2ⁿ) (|0...0> + |0...1> + ... + |1...1>)
 - All 2ⁿ basis states have equal amplitude: 1/√2ⁿ
 - All states have equal probability: 1/2ⁿ
 
-### 3. No Entanglement
+## 3. No Entanglement
 
 The multi-qubit superposition created by independent Hadamard gates is:
 - A product state (not entangled)
-- Can be written as: |+⟩ ⊗ |+⟩ ⊗ ... ⊗ |+⟩
+- Can be written as: |+> ⊗ |+> ⊗ ... ⊗ |+>
 - Each qubit is independent
 
-### 4. Measurement Statistics
+## 4. Measurement Statistics
 
 - Total number of states: 2ⁿ
 - Probability of each state: 1/2ⁿ
 - Uniform distribution across all states
 - Chi-square test can verify uniformity
 
-### 5. Applications
+## 5. Applications
 
 - Quantum algorithms: Many algorithms start with equal superposition
 - Quantum search: Grover's algorithm uses uniform superposition
@@ -956,9 +956,9 @@ The multi-qubit superposition created by independent Hadamard gates is:
 ## Mathematical Formulation
 
 For n qubits with Hadamard gates:
-- H⊗ⁿ|0⟩⊗ⁿ = (1/√2ⁿ) Σₓ₌₀^(2ⁿ⁻¹) |x⟩
-- Each basis state |x⟩ has amplitude 1/√2ⁿ
-- Probability of measuring |x⟩ is |1/√2ⁿ|² = 1/2ⁿ
+- H⊗ⁿ|0>⊗ⁿ = (1/√2ⁿ) Σₓ₌₀^(2ⁿ-¹) |x>
+- Each basis state |x> has amplitude 1/√2ⁿ
+- Probability of measuring |x> is |1/√2ⁿ|² = 1/2ⁿ
 
 ## Verification
 
@@ -991,7 +991,7 @@ To verify uniform superposition:
                 "question": "What gate is used to create equal superposition on each qubit?",
                 "options": ["X gate", "Z gate", "Hadamard gate", "CNOT gate"],
                 "correct": 2,
-                "explanation": "The Hadamard gate creates equal superposition: H|0⟩ = (|0⟩ + |1⟩)/√2."
+                "explanation": "The Hadamard gate creates equal superposition: H|0> = (|0> + |1>)/√2."
             },
             {
                 "question": "What is the amplitude of each state in an n-qubit equal superposition?",
@@ -1005,7 +1005,7 @@ To verify uniform superposition:
         "id": "ghz_state",
         "module": "ghz_state",
         "title": "Entanglement in 3 Qubits (GHZ State)",
-        "description": "Create a GHZ state (|000⟩ + |111⟩)/√2 and show that measuring one qubit determines the others.",
+        "description": "Create a GHZ state (|000> + |111>)/√2 and show that measuring one qubit determines the others.",
         "category": "Quantum Entanglement & Noise",
         "difficulty": "Intermediate",
         "theory": """
@@ -1017,41 +1017,41 @@ The GHZ state (Greenberger-Horne-Zeilinger state) is a maximally entangled three
 
 ## Key Concepts
 
-### 1. GHZ State Definition
+## 1. GHZ State Definition
 
 The GHZ state is:
-- |GHZ⟩ = (|000⟩ + |111⟩)/√2
-- Equal superposition of |000⟩ and |111⟩
+- |GHZ> = (|000> + |111>)/√2
+- Equal superposition of |000> and |111>
 - Maximally entangled three-qubit state
 
-### 2. Creation Circuit
+## 2. Creation Circuit
 
 To create a GHZ state:
-1. Apply H gate to qubit 0: creates (|0⟩ + |1⟩)/√2
+1. Apply H gate to qubit 0: creates (|0> + |1>)/√2
 2. Apply CNOT(0,1): entangles qubits 0 and 1
 3. Apply CNOT(0,2): entangles qubit 2 with the pair
 
-### 3. Perfect Correlations
+## 3. Perfect Correlations
 
 - Measuring any qubit determines the others
 - If qubit 0 = 0 → qubits 1 and 2 must be 0
 - If qubit 0 = 1 → qubits 1 and 2 must be 1
 - Same for measuring qubit 1 or 2
 
-### 4. Measurement Outcomes
+## 4. Measurement Outcomes
 
-- Only two outcomes possible: |000⟩ or |111⟩
+- Only two outcomes possible: |000> or |111>
 - Each with 50% probability
 - No other states observed (in ideal case)
 
-### 5. Entanglement Properties
+## 5. Entanglement Properties
 
 - **Maximal entanglement**: All three qubits are maximally entangled
 - **Bipartite entanglement**: Tracing out one qubit leaves others in mixed state
 - **Fragility**: Losing one qubit destroys all entanglement
 - **Non-locality**: Demonstrates quantum non-locality
 
-### 6. Applications
+## 6. Applications
 
 - Quantum teleportation networks
 - Quantum error correction
@@ -1061,8 +1061,8 @@ To create a GHZ state:
 
 ## Mathematical Properties
 
-- State: |GHZ⟩ = (|000⟩ + |111⟩)/√2
-- Density matrix: ρ = |GHZ⟩⟨GHZ|
+- State: |GHZ> = (|000> + |111>)/√2
+- Density matrix: ρ = |GHZ>⟨GHZ|
 - Reduced density matrices: Tracing out one qubit gives mixed state
 - Entanglement entropy: Maximum for tripartite entanglement
 
@@ -1076,9 +1076,9 @@ To create a GHZ state:
         "quiz": [
             {
                 "question": "What is the GHZ state?",
-                "options": ["|000⟩", "|111⟩", "(|000⟩ + |111⟩)/√2", "(|001⟩ + |010⟩ + |100⟩)/√3"],
+                "options": ["|000>", "|111>", "(|000> + |111>)/√2", "(|001> + |010> + |100>)/√3"],
                 "correct": 2,
-                "explanation": "The GHZ state is (|000⟩ + |111⟩)/√2, an equal superposition of |000⟩ and |111⟩."
+                "explanation": "The GHZ state is (|000> + |111>)/√2, an equal superposition of |000> and |111>."
             },
             {
                 "question": "What happens when you measure one qubit in a GHZ state?",
@@ -1090,7 +1090,7 @@ To create a GHZ state:
                 "question": "How many measurement outcomes are possible for a GHZ state?",
                 "options": ["1", "2", "4", "8"],
                 "correct": 1,
-                "explanation": "Only two outcomes are possible: |000⟩ or |111⟩, each with 50% probability."
+                "explanation": "Only two outcomes are possible: |000> or |111>, each with 50% probability."
             },
             {
                 "question": "What is the main difference between GHZ and W states?",
@@ -1110,50 +1110,50 @@ To create a GHZ state:
         "id": "w_state",
         "module": "w_state",
         "title": "Entanglement in 3 Qubits (W State)",
-        "description": "Prepare the W state (|001⟩ + |010⟩ + |100⟩)/√3 and compare its robustness to qubit loss vs. GHZ state.",
+        "description": "Prepare the W state (|001> + |010> + |100>)/√3 and compare its robustness to qubit loss vs. GHZ state.",
         "category": "Quantum Entanglement & Noise",
         "difficulty": "Intermediate",
         "theory": """
 
-### Introduction
+## Introduction
 
 The W state is a three-qubit entangled state that is more robust to qubit loss than the GHZ state. It represents a different type of multipartite entanglement.
 
-### 1. W State Definition
+## 1. W State Definition
 
 The W state is:
-- |W⟩ = (|001⟩ + |010⟩ + |100⟩)/√3
-- Equal superposition of states with exactly one qubit in |1⟩
+- |W> = (|001> + |010> + |100>)/√3
+- Equal superposition of states with exactly one qubit in |1>
 - Symmetric under permutation of qubits
 
-### 2. Creation Circuit
+## 2. Creation Circuit
 
 Creating a W state is more complex than GHZ:
 - Requires rotation gates (RY) and controlled gates
 - Multiple methods exist for W state preparation
 - Typically uses θ = 2 arctan(√2) rotation angle
 
-### 3. Measurement Properties
+## 3. Measurement Properties
 
-- Always measures exactly one qubit in |1⟩ state
-- Three possible outcomes: |001⟩, |010⟩, or |100⟩
+- Always measures exactly one qubit in |1> state
+- Three possible outcomes: |001>, |010>, or |100>
 - Each outcome has probability 1/3
 - Symmetric: P(1) = 1/3 for each qubit individually
 
-### 4. Robustness to Qubit Loss
+## 4. Robustness to Qubit Loss
 
 - **W State**: If one qubit is lost, remaining two qubits are still entangled
 - **GHZ State**: If one qubit is lost, remaining two qubits become completely mixed
 - This makes W state more robust for certain applications
 
-### 5. Entanglement Structure
+## 5. Entanglement Structure
 
 - All three qubits are entangled
 - Bipartite entanglement persists after qubit loss
 - Different entanglement structure than GHZ state
 - Cannot be written as product of Bell states
 
-### 6. Applications
+## 6. Applications
 
 - Quantum communication where robustness is important
 - Quantum error correction
@@ -1164,31 +1164,31 @@ Creating a W state is more complex than GHZ:
 
 | Property | W State | GHZ State |
 |----------|---------|-----------|
-| State | (|001⟩ + |010⟩ + |100⟩)/√3 | (|000⟩ + |111⟩)/√3 |
-| Outcomes | |001⟩, |010⟩, |100⟩ | |000⟩, |111⟩ |
+| State | (|001> + |010> + |100>)/√3 | (|000> + |111>)/√3 |
+| Outcomes | |001>, |010>, |100> | |000>, |111> |
 | Qubit Loss | Retains entanglement | Loses all entanglement |
 | Symmetry | Permutation symmetric | Permutation symmetric |
 | Applications | Robust protocols | Teleportation, tests |
 
 ## Mathematical Properties
 
-- State: |W⟩ = (|001⟩ + |010⟩ + |100⟩)/√3
-- Symmetry: |W⟩ is invariant under qubit permutation
+- State: |W> = (|001> + |010> + |100>)/√3
+- Symmetry: |W> is invariant under qubit permutation
 - Reduced states: Tracing out one qubit leaves entangled pair
 - Entanglement: Persistent bipartite entanglement after loss
         """,
         "quiz": [
             {
                 "question": "What is the W state?",
-                "options": ["(|000⟩ + |111⟩)/√2", "(|001⟩ + |010⟩ + |100⟩)/√3", "|000⟩", "|111⟩"],
+                "options": ["(|000> + |111>)/√2", "(|001> + |010> + |100>)/√3", "|000>", "|111>"],
                 "correct": 1,
-                "explanation": "The W state is (|001⟩ + |010⟩ + |100⟩)/√3, a superposition of states with exactly one |1⟩."
+                "explanation": "The W state is (|001> + |010> + |100>)/√3, a superposition of states with exactly one |1>."
             },
             {
-                "question": "What is the probability of measuring |1⟩ on any single qubit in a W state?",
+                "question": "What is the probability of measuring |1> on any single qubit in a W state?",
                 "options": ["1/2", "1/3", "1/4", "1"],
                 "correct": 1,
-                "explanation": "Each qubit has probability 1/3 of being measured as |1⟩ in a W state."
+                "explanation": "Each qubit has probability 1/3 of being measured as |1> in a W state."
             },
             {
                 "question": "What happens to entanglement when one qubit is lost from a W state?",
@@ -1200,7 +1200,7 @@ Creating a W state is more complex than GHZ:
                 "question": "How many measurement outcomes are possible for a W state?",
                 "options": ["1", "2", "3", "8"],
                 "correct": 2,
-                "explanation": "Three outcomes are possible: |001⟩, |010⟩, or |100⟩, each with probability 1/3."
+                "explanation": "Three outcomes are possible: |001>, |010>, or |100>, each with probability 1/3."
             },
             {
                 "question": "Why is W state more robust than GHZ state?",
@@ -1219,19 +1219,19 @@ Creating a W state is more complex than GHZ:
         "difficulty": "Intermediate",
         "theory": """
 
-### Introduction
+## Introduction
 
 Quantum circuit identities are relationships showing that different sequences of gates produce the same result. Verifying these identities is crucial for circuit optimization and understanding quantum operations.
 
 
-### 1. Circuit Equivalence
+## 1. Circuit Equivalence
 
 Two circuits are equivalent if:
 - They produce the same operator (unitary matrix)
 - They produce the same measurement outcomes for all input states
 - They have the same effect on any quantum state
 
-### 2. Common Identities
+## 2. Common Identities
 
 **Hadamard Conjugation:**
 - HZH = X: Hadamard conjugates Z to X
@@ -1246,7 +1246,7 @@ Two circuits are equivalent if:
 - CNOT(a,b) CNOT(b,a) CNOT(a,b) = SWAP(a,b)
 - CNOT is self-inverse when applied twice with same control
 
-### 3. Verification Methods
+## 3. Verification Methods
 
 **Method 1: Operator Comparison**
 - Compute unitary matrices for both circuits
@@ -1258,18 +1258,18 @@ Two circuits are equivalent if:
 - Compare measurement outcomes
 - Statistical verification
 
-### 4. Applications
+## 4. Applications
 
 - **Circuit Optimization**: Simplify circuits using identities
 - **Gate Decomposition**: Break down complex gates
 - **Error Correction**: Understand error correction circuits
 - **Algorithm Design**: Use identities in algorithm construction
 
-### 5. Mathematical Basis
+## 5. Mathematical Basis
 
 - Unitary matrices: U₁ = U₂ if circuits are equivalent
 - Operator norm: ||U₁ - U₂|| = 0 for equivalent circuits
-- State equivalence: U₁|ψ⟩ = U₂|ψ⟩ for all |ψ⟩
+- State equivalence: U₁|ψ> = U₂|ψ> for all |ψ>
 
 ## Important Identities
 
@@ -1330,19 +1330,19 @@ Two circuits are equivalent if:
         "theory": """
 
 
-### 1. Encoding
+## 1. Encoding
 
 **Logical States:**
-- |0⟩_L = |000⟩ (logical 0 encoded as three 0s)
-- |1⟩_L = |111⟩ (logical 1 encoded as three 1s)
+- |0>_L = |000> (logical 0 encoded as three 0s)
+- |1>_L = |111> (logical 1 encoded as three 1s)
 
 **Encoding Circuit:**
-1. Start with |ψ⟩|0⟩|0⟩
+1. Start with |ψ>|0>|0>
 2. Apply CNOT(0,1): entangles qubits 0 and 1
 3. Apply CNOT(0,2): entangles qubit 2 with qubit 0
-4. Result: |ψ⟩|ψ⟩|ψ⟩ (three copies)
+4. Result: |ψ>|ψ>|ψ> (three copies)
 
-### 2. Error Detection (Syndrome Measurement)
+## 2. Error Detection (Syndrome Measurement)
 
 **Syndrome Bits:**
 - Syndrome bit 0: Parity of qubits 0 and 1
@@ -1357,21 +1357,21 @@ Two circuits are equivalent if:
 | 10 | Qubit 1 | Error on qubit 1 |
 | 11 | Qubit 0 | Error on qubit 0 |
 
-### 3. Error Correction
+## 3. Error Correction
 
 Once error is detected:
 - Apply X gate to the corrupted qubit
 - This corrects the bit-flip error
 - Restores the encoded state
 
-### 4. Limitations
+## 4. Limitations
 
 - **Only detects bit-flip errors**: Cannot detect phase errors
 - **Single error only**: Cannot correct multiple errors
 - **Overhead**: Requires 3 physical qubits for 1 logical qubit
 - **Measurement**: Requires mid-circuit measurement
 
-### 5. Applications
+## 5. Applications
 
 - Quantum error correction
 - Fault-tolerant quantum computing
@@ -1381,9 +1381,9 @@ Once error is detected:
 ## Mathematical Formulation
 
 **Encoding:**
-- |0⟩_L → |000⟩
-- |1⟩_L → |111⟩
-- |ψ⟩ = α|0⟩ + β|1⟩ → α|000⟩ + β|111⟩
+- |0>_L → |000>
+- |1>_L → |111>
+- |ψ> = α|0> + β|1> → α|000> + β|111>
 
 **Error Model:**
 - Bit-flip error: X gate applied to one qubit
@@ -1396,10 +1396,10 @@ Once error is detected:
         """,
         "quiz": [
             {
-                "question": "What is encoded as |000⟩ in the bit-flip code?",
-                "options": ["Logical |0⟩", "Logical |1⟩", "Error state", "Nothing"],
+                "question": "What is encoded as |000> in the bit-flip code?",
+                "options": ["Logical |0>", "Logical |1>", "Error state", "Nothing"],
                 "correct": 0,
-                "explanation": "Logical |0⟩ is encoded as |000⟩ in the 3-qubit bit flip code."
+                "explanation": "Logical |0> is encoded as |000> in the 3-qubit bit flip code."
             },
             {
                 "question": "What does syndrome 01 indicate?",
@@ -1431,30 +1431,30 @@ Once error is detected:
         "id": "phase_flip_code",
         "module": "phase_flip_code",
         "title": "Error Detection with 3-Qubit Phase Flip Code",
-        "description": "Extend bit-flip code idea to detect phase errors. Show that errors in |+⟩/|−⟩ basis can be caught.",
+        "description": "Extend bit-flip code idea to detect phase errors. Show that errors in |+>/|−> basis can be caught.",
         "category": "Quantum Error Correction",
         "difficulty": "Advanced",
         "theory": """
 
-### 1. Encoding in X Basis
+## 1. Encoding in X Basis
 
 **Logical States:**
-- |0⟩_L = |+++⟩ = (|0⟩+|1⟩)/√2 ⊗ (|0⟩+|1⟩)/√2 ⊗ (|0⟩+|1⟩)/√2
-- |1⟩_L = |---⟩ = (|0⟩-|1⟩)/√2 ⊗ (|0⟩-|1⟩)/√2 ⊗ (|0⟩-|1⟩)/√2
+- |0>_L = |+++> = (|0>+|1>)/√2 ⊗ (|0>+|1>)/√2 ⊗ (|0>+|1>)/√2
+- |1>_L = |---> = (|0>-|1>)/√2 ⊗ (|0>-|1>)/√2 ⊗ (|0>-|1>)/√2
 
 **Encoding Circuit:**
 1. Apply Hadamard to all qubits (switch to X basis)
 2. Apply CNOT gates to create redundancy
-3. Result: |+++⟩ or |---⟩ depending on logical state
+3. Result: |+++> or |---> depending on logical state
 
-### 2. Phase Flip Errors
+## 2. Phase Flip Errors
 
 **Phase Flip:**
-- Z gate flips phase: Z|+⟩ = |-⟩ and Z|-⟩ = |+⟩
+- Z gate flips phase: Z|+> = |-> and Z|-> = |+>
 - In computational basis, this is a phase error
 - In X basis, this becomes a bit flip
 
-### 3. Syndrome Measurement
+## 3. Syndrome Measurement
 
 **In X Basis:**
 - Measure parity in X basis using Hadamard gates
@@ -1469,14 +1469,14 @@ Once error is detected:
 | 10 | Qubit 1 | Z on 1 |
 | 11 | Qubit 0 | Z on 0 |
 
-### 4. Duality with Bit-Flip Code
+## 4. Duality with Bit-Flip Code
 
 - Bit-flip code: Works in Z basis, detects X errors
 - Phase-flip code: Works in X basis, detects Z errors
 - Related by Hadamard transformation
 - Dual codes: H (bit-flip code) H = phase-flip code
 
-### 5. Applications
+## 5. Applications
 
 - Quantum error correction for phase errors
 - Protecting against phase decoherence
@@ -1486,8 +1486,8 @@ Once error is detected:
 ## Mathematical Formulation
 
 **Encoding:**
-- |0⟩_L → |+++⟩
-- |1⟩_L → |---⟩
+- |0>_L → |+++>
+- |1>_L → |--->
 - Encoding uses Hadamard basis
 
 **Error Detection:**
@@ -1503,9 +1503,9 @@ Once error is detected:
         "quiz": [
             {
                 "question": "In which basis does the phase-flip code work?",
-                "options": ["Z basis (|0⟩/|1⟩)", "X basis (|+⟩/|-⟩)", "Y basis", "Arbitrary basis"],
+                "options": ["Z basis (|0>/|1>)", "X basis (|+>/|->)", "Y basis", "Arbitrary basis"],
                 "correct": 1,
-                "explanation": "The phase-flip code works in X basis (|+⟩/|-⟩), which is the Hadamard basis."
+                "explanation": "The phase-flip code works in X basis (|+>/|->), which is the Hadamard basis."
             },
             {
                 "question": "What type of errors does the phase-flip code detect?",
@@ -1526,10 +1526,10 @@ Once error is detected:
                 "explanation": "Z gate is applied to the corrupted qubit to correct a phase-flip error."
             },
             {
-                "question": "How is logical |0⟩ encoded in the phase-flip code?",
-                "options": ["|000⟩", "|111⟩", "|+++⟩", "|---⟩"],
+                "question": "How is logical |0> encoded in the phase-flip code?",
+                "options": ["|000>", "|111>", "|+++>", "|--->"],
                 "correct": 2,
-                "explanation": "Logical |0⟩ is encoded as |+++⟩ in the phase-flip code, using the X basis."
+                "explanation": "Logical |0> is encoded as |+++> in the phase-flip code, using the X basis."
             }
         ]
     }

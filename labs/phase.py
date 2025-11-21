@@ -5,6 +5,7 @@ from qiskit_aer import AerSimulator
 from qiskit.circuit.library import QFT
 from qiskit.visualization import plot_histogram
 import matplotlib.pyplot as plt
+from certificate import store_simulation_data, save_figure_to_data
 
 
 def run():
@@ -179,6 +180,35 @@ def run():
             # Raw data
             with st.expander("View Raw Measurement Data"):
                 st.json(counts)
+            
+            # Store simulation data for PDF report
+            from lab_config import LABS
+            lab_id = None
+            for name, config in LABS.items():
+                if config.get('module') == 'phase':
+                    lab_id = config['id']
+                    break
+            
+            if lab_id:
+                metrics = {
+                    'Precision Qubits': str(precision_qubits),
+                    'Number of Shots': str(shots),
+                    'Operator Type': operator_type,
+                    'True Phase': f"{true_phase:.4f}π",
+                    'Estimated Phase': f"{most_likely_phase:.4f}π",
+                    'Absolute Error': f"{error:.4f}π",
+                    'Relative Error': f"{relative_error * 100:.2f}%",
+                    'Theoretical Precision': f"{theoretical_precision:.6f}π",
+                    'Success Probability': f"{phase_estimates[most_likely_phase] / shots * 100:.1f}%"
+                }
+                
+                figures = [
+                    save_figure_to_data(fig_circuit, 'Phase Estimation Circuit'),
+                    save_figure_to_data(fig_hist, 'Measurement Results'),
+                    save_figure_to_data(fig, 'Phase Distribution')
+                ]
+                
+                store_simulation_data(lab_id, metrics=metrics, measurements=counts, figures=figures)
 
 
 if __name__ == "__main__":

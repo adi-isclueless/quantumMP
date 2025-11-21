@@ -14,6 +14,7 @@ from qiskit_aer import AerSimulator
 from qiskit_aer.noise import NoiseModel, depolarizing_error, pauli_error
 import time
 from PIL import Image, ImageDraw
+from certificate import store_simulation_data, save_figure_to_data
 
 def run():
     st.divider()
@@ -284,7 +285,7 @@ def run():
         else:
             bob_result = np.random.randint(0, 2)
         
-        if eve_active and np.random.random() > 0.3:
+        if eve_active and np.random.random() > 0.65:
             intercepted = True
             eve_basis = np.random.choice(['Z', 'X'])
             if alice_basis == eve_basis:
@@ -562,10 +563,42 @@ def run():
                 display_df['Intercepted'] = df['intercepted'].map({True: 'YES', False: 'NO'})
                 display_df['Eve Basis'] = df['eve_basis'].fillna('-')
             
-            table_placeholder.dataframe(display_df, use_container_width=True, height=150)
+            table_placeholder.dataframe(display_df, use_container_width=True, height=300)
             
             # Update stats
             matched = df['bases_match'].sum()
+            
+            # Calculate QBER - use test bits if complete, otherwise use all matched bits
+            qber_display = 0
+            qber_for_security = 0
+            test_qber_calculated = False
+            sifted_df = None
+            test_indices = None
+            test_indices_set = None
+            n_sifted = 0
+            
+            if matched > 0:
+                if st.session_state.current_step >= num_steps:
+                    # Simulation complete - calculate QBER from test bits (BB84 protocol)
+                    sifted_df = df[df['bases_match'] == True].copy()
+                    n_sifted = len(sifted_df)
+                    
+                    # Use 20% for testing, rest for final key
+                    n_test = max(1, int(n_sifted * 0.2))
+                    test_indices = np.random.choice(n_sifted, n_test, replace=False)
+                    test_indices_set = set(test_indices)
+                    
+                    # Calculate QBER from test bits
+                    test_errors = sum(1 for idx in test_indices
+                                    if sifted_df.iloc[idx]['error'] == True)
+                    qber_display = (test_errors / n_test * 100) if n_test > 0 else 0
+                    qber_for_security = qber_display
+                    test_qber_calculated = True
+                else:
+                    # During simulation - show QBER from all matched bits (approximation)
+                    errors = df[df['bases_match'] == True]['error'].sum()
+                    qber_display = errors / matched * 100
+            
             col1, col2, col3, col4 = stats_placeholder.columns(4)
             with col1:
                 st.metric("Total Bits", len(df))
@@ -573,9 +606,10 @@ def run():
                 st.metric("Sifted", f"{matched}")
             with col3:
                 if matched > 0:
-                    errors = df[df['bases_match'] == True]['error'].sum()
-                    qber = errors / matched * 100
-                    st.metric("QBER", f"{qber:.1f}%")
+                    if test_qber_calculated:
+                        st.metric("QBER (Test)", f"{qber_display:.1f}%")
+                    else:
+                        st.metric("QBER", f"{qber_display:.1f}%")
             with col4:
                 if eve_enabled:
                     intercepted = df['intercepted'].sum()
@@ -583,15 +617,36 @@ def run():
             
             # Check if complete
             if st.session_state.current_step >= num_steps:
-                if matched > 0:
-                    errors = df[df['bases_match'] == True]['error'].sum()
-                    qber = errors / matched * 100
+                if matched > 0 and sifted_df is not None:
+                    # QBER already calculated above from test bits
+                    qber = qber_for_security
+                    
+                    # Generate final key from remaining bits
+                    final_indices = [i for i in range(n_sifted) if i not in test_indices_set]
+                    alice_key = [int(sifted_df.iloc[idx]['alice_bit']) for idx in final_indices]
+                    bob_key = [int(sifted_df.iloc[idx]['bob_result']) for idx in final_indices]
+                    
                     if qber < 11:
                         st.success("SECURE - QBER below 11%. No eavesdropping detected!")
+                        st.markdown("#### Generated Key")
+                        if len(alice_key) > 0:
+                            key_display_length = min(50, len(alice_key))
+                            st.code(f"Alice's Key (first {key_display_length} bits): {''.join(map(str, alice_key[:key_display_length]))}")
+                            st.code(f"Bob's Key   (first {key_display_length} bits): {''.join(map(str, bob_key[:key_display_length]))}")
+                            if len(alice_key) > 50:
+                                st.caption(f"Showing first 50 of {len(alice_key)} bits")
+                            # Check if keys match
+                            if alice_key == bob_key:
+                                st.success("✓ Keys match perfectly!")
+                            else:
+                                mismatches = sum(1 for a, b in zip(alice_key, bob_key) if a != b)
+                                st.warning(f"⚠ Keys have {mismatches} mismatch(es) out of {len(alice_key)} bits")
+                        else:
+                            st.warning("No key bits available after sifting and testing.")
                     else:
-                        st.error("INSECURE - QBER exceeds 11%. Eavesdropping detected!")
+                        st.error("⚠️ WARNING - QBER exceeds 11%. Eavesdropping detected! Key generation aborted for security.")
+                        st.warning("The quantum channel is not secure. Do not use any key generated under these conditions.")
                 
-                st.success("All transmissions complete!")
         else:
             # Show initial state
             initial_data = {
@@ -672,6 +727,45 @@ def run():
                         st.write(f"**Keys Match:** {'Yes' if result['keys_match'] else 'No'}")
                         if eve_analysis:
                             st.write(f"**Eve Intercepts:** {result['eve_stats']['interceptions']} ({result['eve_stats']['intercept_rate']*100:.1f}%)")
+                    
+                    # Store simulation data for PDF report
+                    from lab_config import LABS
+                    lab_id = None
+                    for name, config in LABS.items():
+                        if config.get('module') == 'bb84':
+                            lab_id = config['id']
+                            break
+                    
+                    if lab_id:
+                        metrics = {
+                            'Initial Bits': str(result['initial_bits']),
+                            'Sifted Bits': str(result['sifted_bits']),
+                            'Final Key Length': str(result['final_key_length']),
+                            'QBER': f"{result['qber'] * 100:.2f}%",
+                            'Sifting Efficiency': f"{result['sifting_efficiency'] * 100:.1f}%",
+                            'Security Status': 'SECURE' if result['secure'] else 'INSECURE',
+                            'Keys Match': 'Yes' if result['keys_match'] else 'No',
+                            'Channel Noise': f"{noise_single}%"
+                        }
+                        if eve_analysis:
+                            metrics['Eve Intercept Rate'] = f"{eve_prob_analysis}%"
+                            metrics['Eve Interceptions'] = str(result['eve_stats']['interceptions'])
+                        
+                        # Prepare measurements from final keys
+                        measurements = {}
+                        if len(bb84.final_key_alice) > 0:
+                            # Count bit patterns in final key
+                            key_str = ''.join(map(str, bb84.final_key_alice[:50]))
+                            for i in range(min(10, len(bb84.final_key_alice))):
+                                measurements[f'Key_Bit_{i}'] = int(bb84.final_key_alice[i])
+                        
+                        figures = [
+                            save_figure_to_data(flow_fig, 'Protocol Flow'),
+                            save_figure_to_data(key_fig, 'Key Comparison') if len(bb84.final_key_alice) > 0 else None
+                        ]
+                        figures = [f for f in figures if f is not None]
+                        
+                        store_simulation_data(lab_id, metrics=metrics, measurements=measurements, figures=figures)
     
     # Tab 3: Performance Analysis
     with tab3:

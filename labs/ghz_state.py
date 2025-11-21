@@ -10,6 +10,7 @@ from qiskit.quantum_info import Statevector, partial_trace
 from qiskit.visualization import plot_histogram, plot_state_city
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
+from certificate import store_simulation_data, save_figure_to_data
 
 def run():
     import streamlit.components.v1 as components
@@ -207,4 +208,49 @@ def run():
             st.warning(f"GHZ state created but probabilities are not equal: P(|000⟩)={ratio_000:.3f}, P(|111⟩)={ratio_111:.3f}")
     else:
         st.error("GHZ state not properly created. Expected only |000⟩ and |111⟩ states.")
+    
+    # Store simulation data for PDF report
+    from lab_config import LABS
+    lab_id = None
+    for name, config in LABS.items():
+        if config.get('module') == 'ghz_state':
+            lab_id = config['id']
+            break
+    
+    if lab_id:
+        total = sum(counts.values())
+        metrics = {
+            'Number of Shots': str(shots),
+            'Measured Qubit': str(measure_qubit),
+        }
+        for state in ['000', '111']:
+            if state in counts:
+                prob = counts[state] / total
+                metrics[f'P(|{state}⟩)'] = f"{prob:.4f}"
+        
+        # Single qubit probabilities
+        total_single = sum(counts_single.values())
+        prob_0 = counts_single.get('0', 0) / total_single
+        prob_1 = counts_single.get('1', 0) / total_single
+        metrics[f'P(Qubit {measure_qubit}=0)'] = f"{prob_0:.4f}"
+        metrics[f'P(Qubit {measure_qubit}=1)'] = f"{prob_1:.4f}"
+        
+        figures = []
+        if show_circuit:
+            fig_circuit = qc.draw(output='mpl', fold=-1)
+            figures.append(save_figure_to_data(fig_circuit, 'GHZ State Circuit'))
+            plt.close(fig_circuit)
+        figures.append(save_figure_to_data(fig_hist, 'Full State Measurements'))
+        figures.append(save_figure_to_data(fig_single, f'Qubit {measure_qubit} Measurement'))
+        if show_statevector:
+            fig_state = plot_state_city(Statevector.from_instruction(qc))
+            figures.append(save_figure_to_data(fig_state, 'Statevector Representation'))
+            plt.close(fig_state)
+        
+        # Combine all measurements
+        all_measurements = dict(counts)
+        for key, val in counts_single.items():
+            all_measurements[f'Single_{key}'] = val
+        
+        store_simulation_data(lab_id, metrics=metrics, measurements=all_measurements, figures=figures)
         

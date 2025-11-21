@@ -4,6 +4,7 @@ from qiskit_aer import AerSimulator
 from qiskit.visualization import plot_histogram
 import matplotlib.pyplot as plt
 import io
+from certificate import store_simulation_data, save_figure_to_data
 
 
 def run():
@@ -115,3 +116,31 @@ def run():
             f"The ancilla qubit was measured in the state **|{parity_result_bit}⟩**, "
             f"which indicates the input has **{parity}** parity."
         )
+    
+    # Store simulation data for PDF report
+    from lab_config import LABS
+    lab_id = None
+    for name, config in LABS.items():
+        if config.get('module') == 'parity':
+            lab_id = config['id']
+            break
+    
+    if lab_id:
+        metrics = {
+            'Input State': f"|{input_state_str}⟩",
+            'Parity Result': parity,
+            'Ancilla Measurement': f"|{parity_result_bit}⟩",
+            'Number of Shots': str(shots)
+        }
+        
+        # Get circuit figure
+        circ_fig, circ_ax = plt.subplots()
+        qc.draw('mpl', ax=circ_ax)
+        
+        figures = [
+            save_figure_to_data(fig, 'Ancilla Qubit Measurement'),
+            save_figure_to_data(circ_fig, 'Parity Check Circuit')
+        ]
+        
+        store_simulation_data(lab_id, metrics=metrics, measurements=counts, figures=figures)
+        plt.close(circ_fig)

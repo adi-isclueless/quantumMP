@@ -4,6 +4,7 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit_aer import AerSimulator
 from qiskit.visualization import plot_histogram
 import matplotlib.pyplot as plt
+from certificate import store_simulation_data, save_figure_to_data
 
 
 def run():
@@ -149,6 +150,35 @@ def run():
             # Raw data
             with st.expander("View Raw Measurement Data"):
                 st.json(counts)
+            
+            # Store simulation data for PDF report
+            from lab_config import LABS
+            lab_id = None
+            for name, config in LABS.items():
+                if config.get('module') == 'walk':
+                    lab_id = config['id']
+                    break
+            
+            if lab_id:
+                metrics = {
+                    'Number of Steps': str(num_steps),
+                    'Number of Positions': str(num_positions),
+                    'Number of Shots': str(shots),
+                    'Coin Type': coin_type,
+                    'Mean Position': f"{mean_position:.2f}",
+                    'Standard Deviation': f"{std_dev:.2f}",
+                    'Initial Position': str(center)
+                }
+                
+                # Convert position_counts to measurements format
+                measurements = {str(pos): count for pos, count in position_counts.items()}
+                
+                figures = [
+                    save_figure_to_data(fig_circuit, 'Quantum Walk Circuit'),
+                    save_figure_to_data(fig, 'Position Distribution')
+                ]
+                
+                store_simulation_data(lab_id, metrics=metrics, measurements=measurements, figures=figures)
 
 
 if __name__ == "__main__":
