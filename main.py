@@ -29,6 +29,22 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Custom CSS to set sidebar width to 381px
+st.markdown(
+    """
+    <style>
+    [data-testid="stSidebar"] {
+        min-width: 381px;
+        max-width: 381px;
+    }
+    [data-testid="stSidebar"] > div:first-child {
+        width: 381px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Initialize session state
 init_session_state()
 
@@ -100,20 +116,6 @@ with st.sidebar:
     st.markdown(f"**Welcome, {st.session_state.user_name or st.session_state.username}!**")
     if st.button("Logout", use_container_width=True):
         logout()
-    
-    st.markdown("---")
-    
-    # Progress section
-    st.markdown("### Your Progress")
-    total_labs = len(LABS)
-    completed = sum(1 for lab_id in [config['id'] for config in LABS.values()] if has_certificate(lab_id))
-    quiz_passed_count = sum(1 for lab_id in [config['id'] for config in LABS.values()] if has_passed_quiz(lab_id))
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("Labs Completed", f"{completed}/{total_labs}")
-    with col2:
-        st.metric("Quizzes Passed", f"{quiz_passed_count}/{total_labs}")
     
     st.markdown("---")
     
