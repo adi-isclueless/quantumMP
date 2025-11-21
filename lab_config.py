@@ -94,7 +94,7 @@ The Bloch sphere is a geometric representation of a quantum state:
     },
     "Random Number Generator": {
         "id": "random",
-        "module": "random",
+        "module": "randomng",
         "title": "Q-Random Number Generator",
         "description": "Generate truly random numbers using quantum superposition and measurement.",
         "category": "Quantum Foundations",
