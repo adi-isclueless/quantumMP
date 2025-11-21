@@ -256,8 +256,7 @@ def init_session_state():
 
 def login_page():
     """Display login and registration page with OTP verification"""
-    st.title("Quantum Virtual Labs 🔬")
-    st.markdown("### Secure Authentication with OTP")
+    st.title("Quantum Virtual Laboratory")
     st.markdown("---")
     
     init_session_state()
