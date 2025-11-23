@@ -220,9 +220,19 @@ def register_user(username: str, password: str, name: str, email: str) -> bool:
     return True
 
 
-def authenticate_user(username: str, password: str):
-    """Authenticate a user and return the document on success."""
-    user = _users_collection().find_one({"username": username})
+def authenticate_user(username_or_email: str, password: str):
+    """Authenticate a user using username or email and password."""
+    users = _users_collection()
+    
+    # Try to find user by username or email
+    user = None
+    if is_valid_email(username_or_email):
+        # If it's an email format, search by email
+        user = users.find_one({"email": username_or_email})
+    else:
+        # Otherwise search by username
+        user = users.find_one({"username": username_or_email})
+    
     if not user:
         return None
     if not verify_password(password, user["password"]):
@@ -244,6 +254,8 @@ def init_session_state():
         st.session_state.username = None
     if 'user_name' not in st.session_state:
         st.session_state.user_name = None
+    if 'email' not in st.session_state:
+        st.session_state.email = None
     if 'user_id' not in st.session_state:
         st.session_state.user_id = None
     if 'lab_progress' not in st.session_state:
@@ -251,11 +263,11 @@ def init_session_state():
     if 'quiz_scores' not in st.session_state:
         st.session_state.quiz_scores = {}
     if 'otp_step' not in st.session_state:
-        st.session_state.otp_step = None  # 'registration', 'login', or None
+        st.session_state.otp_step = None  # 'registration', or None
 
 
 def login_page():
-    """Display login and registration page with OTP verification"""
+    """Display login and registration page with OTP verification for registration only"""
     st.title("Quantum Virtual Laboratory")
     st.markdown("---")
     
@@ -267,71 +279,41 @@ def login_page():
     with tab1:
         st.markdown("### Login to Your Account")
         
-        if st.session_state.otp_step == 'login':
-            # OTP verification screen for login
-            st.info("📧 An OTP has been sent to your email. Please enter it below.")
-            login_email = st.session_state.get('pending_login_email', '')
-            st.text(f"Verifying: {login_email}")
-            
-            otp_input = st.text_input("Enter OTP (6 digits)", max_chars=6, key="login_otp_input")
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("Verify OTP", type="primary", use_container_width=True):
-                    if not otp_input or len(otp_input) != 6:
-                        st.error("❌ Please enter a valid 6-digit OTP")
-                    else:
-                        with st.spinner("🔐 Verifying OTP..."):
-                            if verify_otp(login_email, otp_input):
-                                # Authentication successful
-                                user_doc = _users_collection().find_one({"email": login_email})
-                                if user_doc:
-                                    st.session_state.authenticated = True
-                                    st.session_state.username = user_doc['username']
-                                    st.session_state.user_id = str(user_doc["_id"])
-                                    st.session_state.user_name = user_doc.get("name", user_doc['username'])
-                                    st.session_state.otp_step = None
-                                    load_user_progress_into_session(user_doc["_id"])
-                                    
-                                    st.success(f"✅ Welcome back, {user_doc.get('name', '')}!")
-                                    st.balloons()
-                                    import time
-                                    time.sleep(1)
-                                    st.rerun()
-                            else:
-                                st.error("❌ Invalid OTP. Please try again.")
-            
-            with col2:
-                if st.button("Back", use_container_width=True):
-                    st.session_state.otp_step = None
-                    st.rerun()
+        # Standard login form with username/email and password
+        login_identifier = st.text_input(
+            "Username or Email", 
+            key="login_identifier_input", 
+            placeholder="Enter your username or email"
+        )
+        login_password = st.text_input(
+            "Password", 
+            type="password", 
+            key="login_password_input",
+            placeholder="Enter your password"
+        )
         
-        else:
-            # Standard login form
-            login_email = st.text_input("Email Address", key="login_email_input", placeholder="your@email.com")
-            
-            if st.button("Send OTP", type="primary", use_container_width=True):
-                if not login_email:
-                    st.error("❌ Please enter your email address")
-                elif not is_valid_email(login_email):
-                    st.error("❌ Please enter a valid email address")
-                else:
-                    # Check if user exists
-                    user = _users_collection().find_one({"email": login_email})
-                    if not user:
-                        st.error("❌ No account found with this email address")
+        if st.button("Login", type="primary", use_container_width=True):
+            if not login_identifier or not login_password:
+                st.error("❌ Please enter both username/email and password")
+            else:
+                with st.spinner("🔐 Authenticating..."):
+                    user_doc = authenticate_user(login_identifier, login_password)
+                    if user_doc:
+                        st.session_state.authenticated = True
+                        st.session_state.username = user_doc['username']
+                        st.session_state.user_id = str(user_doc["_id"])
+                        st.session_state.user_name = user_doc.get("name", user_doc['username'])
+                        st.session_state.email = user_doc.get('email', '')
+                        st.session_state.view_mode = "welcome"  # Send to welcome page
+                        load_user_progress_into_session(user_doc["_id"])
+                        
+                        st.success(f"✅ Welcome back, {user_doc.get('name', '')}!")
+                        st.balloons()
+                        import time
+                        time.sleep(1)
+                        st.rerun()
                     else:
-                        with st.spinner("📧 Sending OTP to your email..."):
-                            otp = create_otp_record(login_email)
-                            if send_otp_email(login_email, otp, user.get('name', user.get('username'))):
-                                st.session_state.otp_step = 'login'
-                                st.session_state.pending_login_email = login_email
-                                st.success("✅ OTP sent! Check your email.")
-                                import time
-                                time.sleep(1)
-                                st.rerun()
-                            else:
-                                st.error("❌ Failed to send OTP. Please try again.")
+                        st.error("❌ Invalid username/email or password")
     
     # ============ TAB 2: REGISTER ============
     with tab2:
@@ -360,7 +342,9 @@ def login_page():
                                     st.session_state.username = user_doc['username']
                                     st.session_state.user_id = str(user_doc["_id"])
                                     st.session_state.user_name = user_doc.get("name", user_doc['username'])
+                                    st.session_state.email = user_doc.get('email', '')
                                     st.session_state.otp_step = None
+                                    st.session_state.view_mode = "welcome"  # Send to welcome page
                                     load_user_progress_into_session(user_doc["_id"])
                                     
                                     # Update email_verified flag
