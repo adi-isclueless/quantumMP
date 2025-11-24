@@ -724,6 +724,17 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
     if "lab_simulation_data" in st.session_state:
         simulation_data = st.session_state.lab_simulation_data.get(lab_id)
     
+    # If no simulation data exists, create default figures for the report
+    if simulation_data is None:
+        from lab_figures import get_lab_figures
+        default_figures = get_lab_figures(lab_id)
+        if default_figures:
+            simulation_data = {
+                "metrics": {},
+                "measurements": {},
+                "figures": default_figures
+            }
+    
     if simulation_data:
         # Include actual simulation results
         observations_text = f"""
