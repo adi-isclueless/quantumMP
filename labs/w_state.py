@@ -11,6 +11,7 @@ from qiskit.visualization import plot_histogram, plot_state_city
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 def create_w_state():
     """Exact 3-qubit W state with only standard gates (no leakage)."""
@@ -136,6 +137,11 @@ def run():
             probs = [counts[state] / total for state in expected_states]
             max_diff = max(abs(p - theoretical_prob) for p in probs)
             st.metric("Uniformity", f"{(1 - max_diff/theoretical_prob)*100:.2f}%")
+            # Display formulas
+            display_formulas(title="Formulas", formulas=[
+                r"|W\rangle = \frac{|001\rangle + |010\rangle + |100\rangle}{\sqrt{3}}",
+                r"P(1\;\text{on a given qubit}) = \frac{1}{3}"
+            ])
     
     # Single qubit measurements
     st.divider()

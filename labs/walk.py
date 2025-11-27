@@ -5,6 +5,7 @@ from qiskit_aer import AerSimulator
 from qiskit.visualization import plot_histogram
 import matplotlib.pyplot as plt
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 
 def run():
@@ -136,6 +137,12 @@ def run():
                 st.metric("Standard Deviation", f"{std_dev:.2f}")
             with col3:
                 st.metric("Initial Position", center)
+
+            # Display formulas for statistics
+            display_formulas(title="Formulas", formulas=[
+                r"\mu = \sum_i x_i P(x_i)",
+                r"\sigma = \sqrt{\sum_i (x_i - \mu)^2 P(x_i)}"
+            ])
 
             # Classical comparison
             st.markdown("### Classical vs Quantum Comparison")

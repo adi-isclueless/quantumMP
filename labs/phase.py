@@ -6,6 +6,7 @@ from qiskit.circuit.library import QFT
 from qiskit.visualization import plot_histogram
 import matplotlib.pyplot as plt
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 
 def run():
@@ -26,6 +27,9 @@ def run():
     col1, col2 = st.columns(2)
     with col1:
         precision_qubits = st.slider("Precision Qubits", 2, 8, 4)
+        display_formulas(title="Formulas", formulas=[
+            r"\varphi = \frac{k}{2^n}\quad(\text{estimated phase})"
+        ])
     with col2:
         shots = st.selectbox("Number of Shots", [100, 500, 1000, 5000, 10000], index=3)
 

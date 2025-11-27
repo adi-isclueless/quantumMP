@@ -1,4 +1,4 @@
-# Quantum Virtual Labs
+# QuantumPlayground
 
 A comprehensive quantum computing education platform with interactive simulations, theory, quizzes, and certificates.
 
@@ -158,7 +158,7 @@ quantumMiniProject/
 
 ## License
 
-© 2025 Quantum Virtual Labs • Developed at VESIT
+© 2025 QuantumPlayground • Developed at VESIT
 
 ## Support
 

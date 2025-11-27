@@ -5,6 +5,7 @@ from qiskit_aer import AerSimulator
 from qiskit.visualization import plot_histogram
 import matplotlib.pyplot as plt
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 
 def run():
@@ -129,6 +130,9 @@ def run():
                 fidelity = corrected_counts.get(expected_state, 0) / total_counts
                 st.metric("Fidelity", f"{fidelity:.3f}")
                 st.metric("Error Rate Used", f"{error_rate:.2f}")
+                display_formulas(title="Formulas", formulas=[
+                    r"F = \frac{N_{\text{correct}}}{N_{\text{total}}}"
+                ])
 
             # Raw syndrome data
             with st.expander("View Raw Measurement Data"):

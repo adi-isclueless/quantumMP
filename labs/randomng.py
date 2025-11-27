@@ -6,6 +6,7 @@ from qiskit.visualization import plot_histogram
 from qiskit_aer import AerSimulator
 from scipy import stats
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 
 def run():
@@ -466,6 +467,13 @@ def run():
                 st.metric("Std Deviation", f"{rt_monitor['std_entropy']:.4f}")
                 st.metric("Min Block Entropy", f"{rt_monitor['min_block_entropy']:.4f}")
                 st.metric("Max Block Entropy", f"{rt_monitor['max_block_entropy']:.4f}")
+
+                # Display entropy formulas
+                display_formulas(title="Formulas", formulas=[
+                    r"H_{\min} = -\log_2(\max_i p_i)",
+                    r"H_{\mathrm{collision}} = -\log_2\left(\sum_i p_i^2\right)",
+                    r"H_{\mathrm{Shannon}} = -\sum_i p_i \log_2 p_i"
+                ])
 
                 consistency_color = "#27ae60" if rt_monitor['consistency_score'] >= 90 else "#f39c12" if rt_monitor[
                                                                                                              'consistency_score'] >= 75 else "#e74c3c"

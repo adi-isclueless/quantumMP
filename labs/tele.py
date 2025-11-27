@@ -10,6 +10,7 @@ from qiskit.visualization import plot_bloch_multivector, plot_histogram, circuit
 import matplotlib.pyplot as plt
 import numpy as np
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 # ==================================================
 # FUNCTION: Run Quantum Teleportation Lab
@@ -37,6 +38,9 @@ def run():
         phi = st.slider("Phase angle ϕ (in radians)", 0.0, 2*np.pi, np.pi/4, 0.1)
         st.markdown("The initial state prepared by Alice is:")
         st.latex(r"|ψ⟩ = cos(\frac{θ}{2})|0⟩ + e^{iϕ}sin(\frac{θ}{2})|1⟩")
+        display_formulas(title="Formulas", formulas=[
+            r"|\Phi^+\rangle = \frac{|00\rangle + |11\rangle}{\sqrt{2}}\quad(\text{Bell state})"
+        ])
 
     with col2:
         st.info(" Tip: Use θ and ϕ to change Alice's qubit on the Bloch sphere. "

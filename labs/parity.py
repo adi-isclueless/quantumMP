@@ -5,6 +5,7 @@ from qiskit.visualization import plot_histogram
 import matplotlib.pyplot as plt
 import io
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 
 def run():
@@ -116,6 +117,9 @@ def run():
             f"The ancilla qubit was measured in the state **|{parity_result_bit}⟩**, "
             f"which indicates the input has **{parity}** parity."
         )
+        display_formulas(title="Formulas", formulas=[
+            r"P = q_0 \oplus q_1 \oplus q_2\quad(\text{XOR parity})"
+        ])
     
     # Store simulation data for PDF report
     from lab_config import LABS

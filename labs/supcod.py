@@ -8,6 +8,7 @@ from qiskit_aer import AerSimulator
 from qiskit.visualization import plot_histogram, circuit_drawer
 import matplotlib.pyplot as plt
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 # ==================================================
 # FUNCTION: Run Superdense Coding Lab
@@ -40,6 +41,9 @@ def run():
     - 10 → Z gate  
     - 11 → X followed by Z
     """)
+    display_formulas(title="Formulas", formulas=[
+        r"|\Phi^+\rangle = \frac{|00\rangle + |11\rangle}{\sqrt{2}}"
+    ])
 
     # ------------------------------------------------
     # Quantum Circuit Setup

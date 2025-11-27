@@ -8,6 +8,7 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from io import BytesIO
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 
 def run():
@@ -300,6 +301,9 @@ def run():
         with col1:
             st.metric("State Fidelity", f"{fidelity:.4f}")
             st.write("Fidelity of 1.0 indicates perfect reconstruction")
+            display_formulas(title="Formulas", formulas=[
+                r"F(\rho,\sigma) = \mathrm{Tr}\left(\sqrt{\sqrt{\rho}\,\sigma\,\sqrt{\rho}}\right)",
+            ])
 
         with col2:
             st.write("Bloch vector components:")

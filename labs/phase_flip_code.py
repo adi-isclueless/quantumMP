@@ -11,6 +11,7 @@ from qiskit.visualization import plot_histogram
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 def run():
     import streamlit.components.v1 as components
@@ -173,6 +174,11 @@ def run():
         st.metric("Syndrome 01", syndrome_01, f"{syndrome_01/total*100:.1f}%")
         st.metric("Syndrome 10", syndrome_10, f"{syndrome_10/total*100:.1f}%")
         st.metric("Syndrome 11", syndrome_11, f"{syndrome_11/total*100:.1f}%")
+        # Display syndrome/parity formulas
+        display_formulas(title="Formulas", formulas=[
+            r"s_1 = q_0 \oplus q_1\quad(\text{parity of qubits 0 and 1})",
+            r"s_0 = q_0 \oplus q_2\quad(\text{parity of qubits 0 and 2})"
+        ])
         
         # Determine error location
         if error_qubit == "None":

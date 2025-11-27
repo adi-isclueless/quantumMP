@@ -245,7 +245,7 @@ def generate_certificate(lab_id_or_name: str, user_name: str = None, lab_config:
     )
 
     # Subtitle
-    subtitle = "Quantum Virtual Labs"
+    subtitle = "QuantumPlayground"
     sw = draw.textlength(subtitle, font=FONT_TEXT)
     draw.text(((width - sw) // 2, title_y + 130), subtitle, fill="#3949ab", font=FONT_TEXT)
 
@@ -644,7 +644,7 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
             return None
     
     # Title
-    elements.append(Paragraph("Quantum Virtual Laboratory Experiment Report", title_style))
+    elements.append(Paragraph("QuantumPlayground Experiment Report", title_style))
     elements.append(Spacer(1, 0.3*inch))
     
     # Report Information Table
@@ -695,7 +695,7 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
     # 3. Implementation
     elements.append(Paragraph("3. Implementation", heading_style))
     implementation_text = f"""
-    This experiment was implemented using Qiskit, a quantum computing framework, and executed through the Quantum Virtual Labs platform.
+    This experiment was implemented using Qiskit, a quantum computing framework, and executed through the QuantumPlayground platform.
     
     <b>Tools and Technologies Used:</b>
     <br/>• Qiskit: Quantum circuit design and simulation
@@ -856,7 +856,7 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
     # Footer
     elements.append(Spacer(1, 0.2*inch))
     footer_text = f"""
-    <i>This report was generated automatically by the Quantum Virtual Labs platform.</i>
+    <i>This report was generated automatically by the QuantumPlayground platform.</i>
     <br/><i>Report generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</i>
     """
     elements.append(markdown_to_paragraph(footer_text, info_style))

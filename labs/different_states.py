@@ -5,6 +5,7 @@ from qiskit.visualization import plot_histogram, plot_bloch_multivector
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 def run():
     import streamlit.components.v1 as components
@@ -25,6 +26,10 @@ def run():
         - |+⟩ = (|0⟩ + |1⟩) / √2  
         - |i⟩ = (|0⟩ + i|1⟩) / √2 
         """)
+        display_formulas(title="Formulas", formulas=[
+            r"|+\rangle = \frac{|0\rangle + |1\rangle}{\sqrt{2}}",
+            r"|i\rangle = \frac{|0\rangle + i|1\rangle}{\sqrt{2}}"
+        ])
     with B:
         st.markdown(""" 
         **Measurement Bases:**  

@@ -6,6 +6,7 @@ from qiskit.visualization import plot_histogram
 from qiskit_aer import AerSimulator
 from qiskit_aer.noise import NoiseModel, depolarizing_error, amplitude_damping_error, phase_damping_error
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 
 def run():
@@ -68,6 +69,12 @@ def run():
         st.markdown("""
         **Objective:** Prepare all 4 Bell states and show differences in measurement outcomes and correlations.
         """)
+        display_formulas(title="Bell States", formulas=[
+            r"|\Phi^+\rangle = \frac{|00\rangle + |11\rangle}{\sqrt{2}}",
+            r"|\Phi^-\rangle = \frac{|00\rangle - |11\rangle}{\sqrt{2}}",
+            r"|\Psi^+\rangle = \frac{|01\rangle + |10\rangle}{\sqrt{2}}",
+            r"|\Psi^-\rangle = \frac{|01\rangle - |10\rangle}{\sqrt{2}}"
+        ])
         
         colA, colB = st.columns(2)
         with colA:

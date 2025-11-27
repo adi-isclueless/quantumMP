@@ -1,7 +1,6 @@
 """
-Quantum Virtual Labs - Main Application
-Restructured with login, welcome page, home page, and lab navigation
-Sidebar only visible on home page and lab pages
+QuantumPlayground - Main Application
+Interactive quantum computing simulations and experiments
 """
 
 import streamlit as st
@@ -25,7 +24,7 @@ components.html(
 
 # Page configuration
 st.set_page_config(
-    page_title="Quantum Virtual Labs",
+    page_title="QuantumPlayground",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -52,13 +51,13 @@ if "view_mode" not in st.session_state:
 # Sidebar navigation - ONLY show if NOT on welcome page
 if st.session_state.view_mode != "welcome":
     with st.sidebar:
-        st.title("Quantum Virtual Labs")
+        st.title("QuantumPlayground")
         st.markdown("---")
         
-        with st.expander("About Quantum Virtual Labs"):
+        with st.expander("About QuantumPlayground"):
             st.markdown("""
             #### About the Platform  
-            The **Quantum Virtual Labs** initiative is a student-developed environment designed to make
+            **QuantumPlayground** is a student-developed interactive platform designed to make
             quantum computing concepts **intuitive and visual** through interactive simulations.  
 
             **Objectives:**
@@ -97,7 +96,7 @@ if st.session_state.view_mode != "welcome":
 
             ---
 
-            © 2025 Quantum Virtual Labs • Developed at VESIT
+            © 2025 QuantumPlayground • Developed at VESIT
             """)
         
         st.markdown("---")
@@ -161,14 +160,14 @@ if st.session_state.view_mode != "welcome":
 # Show welcome page first after login
 if st.session_state.view_mode == "welcome" and not st.session_state.current_lab:
     # Welcome Page
-    st.title("Quantum Virtual Labs")
+    st.title("QuantumPlayground")
     st.markdown("**Vivekanand Education Society's Institute of Technology, Mumbai**")
     st.markdown("---")
     
     # About the Platform
     st.markdown("## About the Platform")
     st.markdown("""
-    The **Quantum Virtual Labs** initiative is a student-developed environment designed to make 
+    **QuantumPlayground** is a student-developed interactive platform designed to make 
     quantum computing concepts **intuitive and visual** through interactive simulations.
     """)
     
@@ -223,9 +222,9 @@ if st.session_state.view_mode == "welcome" and not st.session_state.current_lab:
     st.markdown("---")
     
     # Welcome Section
-    st.markdown("## Welcome to Quantum Virtual Labs!")
+    st.markdown("## Welcome to QuantumPlayground!")
     st.markdown("""
-    Explore quantum computing concepts through interactive simulations. Each lab follows a structured learning path:
+    Explore quantum computing concepts through interactive simulations. Each experiment follows a structured learning path:
     
     1. **Theory** - Learn the concepts and principles
     2. **Test** - Test your knowledge with a quiz
@@ -237,7 +236,7 @@ if st.session_state.view_mode == "welcome" and not st.session_state.current_lab:
     
     # List of Experiments
     st.markdown("## Available Experiments")
-    st.markdown("### 14 Interactive Quantum Labs:")
+    st.markdown("### 14 Interactive Quantum Experiments:")
     
     experiments = [
         "Measurement in Different Bases",
@@ -278,17 +277,17 @@ if st.session_state.view_mode == "welcome" and not st.session_state.current_lab:
             st.rerun()
     
     st.markdown("---")
-    st.markdown("© 2025 Quantum Virtual Labs • Developed at VESIT")
+    st.markdown("© 2025 QuantumPlayground • Developed at VESIT")
 
 # Show home page (experiment listing) if view_mode is "home"
 elif st.session_state.view_mode == "home" and not st.session_state.current_lab:
     # Home page with list of experiments
-    st.title("Quantum Virtual Labs")
+    st.title("QuantumPlayground")
     st.markdown("**Vivekanand Education Society's Institute of Technology, Mumbai**")
     st.markdown("---")
     
     st.markdown("""
-    ### Welcome to Quantum Virtual Labs!
+    ### Welcome to QuantumPlayground!
     
     Explore quantum computing concepts through interactive simulations. Each lab follows a structured learning path:
     

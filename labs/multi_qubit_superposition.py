@@ -11,6 +11,7 @@ from qiskit.visualization import plot_histogram, plot_state_city
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 def run():
     import streamlit.components.v1 as components
@@ -101,6 +102,9 @@ def run():
             min_prob = min(observed_probs.values())
             uniformity = 1 - (max_prob - min_prob) / theoretical_prob
             st.metric("Uniformity Score", f"{uniformity * 100:.2f}%")
+        display_formulas(title="Formulas", formulas=[
+            r"|\psi\rangle = \frac{1}{\sqrt{2^n}} \sum_{x=0}^{2^n-1} |x\rangle"
+        ])
         
         # Show state probabilities
         with st.expander("View State Probabilities"):

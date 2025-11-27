@@ -11,6 +11,7 @@ from qiskit.visualization import plot_histogram
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 def run():
     import streamlit.components.v1 as components
@@ -46,6 +47,7 @@ def run():
     if identity_type == "HZH = X":
         st.markdown("### Verifying: HZH = X")
         st.markdown("**Theory:** Applying H, then Z, then H is equivalent to applying X")
+        display_formulas(title="Formula", formulas=[r"HZH = X"])
         
         # Circuit 1: HZH
         qc1 = QuantumCircuit(1)

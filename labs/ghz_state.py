@@ -11,6 +11,7 @@ from qiskit.visualization import plot_histogram, plot_state_city
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
 from certificate import store_simulation_data, save_figure_to_data
+from lab_utils import display_formulas
 
 def run():
     import streamlit.components.v1 as components
@@ -100,6 +101,9 @@ def run():
                 st.metric(f"P(|{state}⟩)", f"{prob:.4f}", f"{(prob - 0.5) * 100:.2f}%")
             else:
                 st.metric(f"P(|{state}⟩)", "0.0000", "-50.00%")
+        display_formulas(title="Formulas", formulas=[
+            r"|GHZ\rangle = \frac{|000\rangle + |111\rangle}{\sqrt{2}}"
+        ])
         
         # Correlation analysis
         if analyze_correlation:
