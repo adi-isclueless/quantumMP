@@ -1,5 +1,5 @@
 """
-Authentication module for QuantumPlayground
+Authentication module for Quantum Playground
 Handles user login, logout, and OTP-based email verification
 """
 
@@ -87,14 +87,14 @@ def send_otp_email(email: str, otp: str, username: str = None) -> bool:
         msg = MIMEMultipart()
         msg['From'] = smtp_email
         msg['To'] = email
-        msg['Subject'] = 'Your QuantumPlayground OTP Code'
+        msg['Subject'] = 'Your Quantum Playground OTP Code'
         
         # Email body with OTP
         body = f"""
         <html>
             <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.8; background-color: #f5f5f5; padding: 20px;">
                 <div style="background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto;">
-                    <h2 style="color: #1a237e; text-align: center; margin-bottom: 20px;">QuantumPlayground</h2>
+                    <h2 style="color: #1a237e; text-align: center; margin-bottom: 20px;">Quantum Playground</h2>
                     
                     <p style="color: #333; font-size: 16px;">
                         Hello{f' <strong>{username}</strong>' if username else ''},
@@ -116,7 +116,7 @@ def send_otp_email(email: str, otp: str, username: str = None) -> bool:
                     <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
                     
                     <p style="color: #999; font-size: 12px;">
-                        <strong>Security Note:</strong> Never share this code with anyone. QuantumPlayground support will never ask for your OTP.
+                        <strong>Security Note:</strong> Never share this code with anyone. Quantum Playground support will never ask for your OTP.
                     </p>
                     
                     <p style="color: #999; font-size: 12px;">
@@ -268,7 +268,7 @@ def init_session_state():
 
 def login_page():
     """Display login and registration page with OTP verification for registration only"""
-    st.title("QuantumPlayground")
+    st.title("Quantum Playground")
     st.markdown("---")
     
     init_session_state()

@@ -1,5 +1,5 @@
 """
-QuantumPlayground - Main Application
+Quantum Playground - Main Application
 Interactive quantum computing simulations and experiments
 """
 
@@ -22,6 +22,12 @@ components.html(
         window.parent.document.documentElement.scrollTop = 0;
     </script>
     <style>
+        /* Sidebar width to fit 'Quantum Playground' */
+        [data-testid="stSidebar"] { width: 320px !important; min-width: 320px !important; }
+        @media (min-width: 1200px) {
+            [data-testid="stSidebar"] { width: 340px !important; min-width: 340px !important; }
+        }
+
         /* Mobile-specific styles */
         @media (max-width: 768px) {
             .stButton > button {
@@ -48,6 +54,9 @@ components.html(
             .stButton > button {
                 min-height: 45px;
             }
+            /* Uniform lab cards */
+            .qp-card { min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; }
+            .qp-card p { margin-bottom: 0.5rem; }
         }
     </style>
     """,
@@ -56,7 +65,7 @@ components.html(
 
 # Page configuration
 st.set_page_config(
-    page_title="QuantumPlayground",
+    page_title="Quantum Playground",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -89,10 +98,14 @@ if "is_mobile" not in st.session_state:
 # Sidebar navigation - ONLY show if NOT on welcome page
 if st.session_state.view_mode != "welcome":
     with st.sidebar:
-        # Language selector at top
+        # Title at top
+        st.title(get_text("title", st.session_state.language))
+        st.markdown("---")
+        
+        # Language selector
         lang_options = {"English": "en", "हिंदी (Hindi)": "hi", "Español (Spanish)": "es", "Français (French)": "fr", "Română (Romanian)": "ro"}
         selected_lang = st.selectbox(
-            get_text("language", st.session_state.language),
+            get_text("", st.session_state.language),
             options=list(lang_options.keys()),
             index=list(lang_options.values()).index(st.session_state.language),
             key="lang_selector"
@@ -100,10 +113,7 @@ if st.session_state.view_mode != "welcome":
         st.session_state.language = lang_options[selected_lang]
         lang = st.session_state.language
         
-        st.title(get_text("title", lang))
-        st.markdown("---")
-        
-        # Help & FAQ Section (no emoji)
+        # Help & FAQ Section
         with st.expander(get_text("help", lang)):
             st.markdown("""
             ### Frequently Asked Questions
@@ -135,13 +145,11 @@ if st.session_state.view_mode != "welcome":
             **Need more help?** Contact your instructor or check the Technical Documentation.
             """)
         
-        st.markdown("---")
-        
-        # Remove emojis and keep About content under Help/Docs grouping by placing it after Help
+        # About the Platform
         with st.expander(get_text("about_platform", lang)):
             st.markdown("""
             #### About the Platform  
-            **QuantumPlayground** is a student-developed interactive platform designed to make
+            **Quantum Playground** is a student-developed interactive platform designed to make
             quantum computing concepts **intuitive and visual** through interactive simulations.  
 
             **""" + get_text("objectives", lang) + """**
@@ -180,8 +188,14 @@ if st.session_state.view_mode != "welcome":
 
             ---
 
-            © 2025 QuantumPlayground • Developed at VESIT
+            © 2025 Quantum Playground • Developed at VESIT
             """)
+        
+        # Technical Documentation Button
+        if st.button(get_text("technical_docs", lang), use_container_width=True):
+            st.session_state.view_mode = "documentation"
+            st.session_state.current_lab = None
+            st.rerun()
         
         st.markdown("---")
         
@@ -197,12 +211,6 @@ if st.session_state.view_mode != "welcome":
         with col2:
             if st.button(get_text("logout", st.session_state.language), use_container_width=True):
                 logout()
-        
-        # Technical Documentation Button (no emoji)
-        if st.button(get_text("technical_docs", lang), use_container_width=True):
-            st.session_state.view_mode = "documentation"
-            st.session_state.current_lab = None
-            st.rerun()
         
         st.markdown("---")
         
@@ -267,7 +275,7 @@ if st.session_state.view_mode == "welcome" and not st.session_state.current_lab:
     # About the Platform
     st.markdown("## " + get_text("about_platform", st.session_state.language))
     st.markdown("""
-    **QuantumPlayground** is a student-developed interactive platform designed to make 
+    **Quantum Playground** is a student-developed interactive platform designed to make 
     quantum computing concepts **intuitive and visual** through interactive simulations.
     """)
     
@@ -322,7 +330,7 @@ if st.session_state.view_mode == "welcome" and not st.session_state.current_lab:
     st.markdown("---")
     
     # Welcome Section
-    st.markdown("## Welcome to QuantumPlayground!")
+    st.markdown("## Welcome to Quantum Playground!")
     st.markdown("""
     Explore quantum computing concepts through interactive simulations. Each experiment follows a structured learning path:
     
@@ -378,17 +386,17 @@ if st.session_state.view_mode == "welcome" and not st.session_state.current_lab:
             st.rerun()
     
     st.markdown("---")
-    st.markdown("© 2025 QuantumPlayground • Developed at VESIT")
+    st.markdown("© 2025 Quantum Playground • Developed at VESIT")
 
 # Show home page (experiment listing) if view_mode is "home"
 elif st.session_state.view_mode == "home" and not st.session_state.current_lab:
     # Home page with list of experiments
-    st.title("QuantumPlayground")
+    st.title(get_text("title", st.session_state.language))
     st.markdown("**Vivekanand Education Society's Institute of Technology, Mumbai**")
     st.markdown("---")
     
     st.markdown("""
-    ### Welcome to QuantumPlayground!
+    ### """ + get_text("welcome", st.session_state.language) + """
     
     Explore quantum computing concepts through interactive simulations. Each lab follows a structured learning path:
     
@@ -419,7 +427,7 @@ elif st.session_state.view_mode == "home" and not st.session_state.current_lab:
                 cert_generated = has_certificate(lab_id)
                 
                 card_html = f"""
-                <div style="
+                <div class=\"qp-card\" style="
                     border: 2px solid #667eea;
                     border-radius: 10px;
                     padding: 1rem;
@@ -427,11 +435,11 @@ elif st.session_state.view_mode == "home" and not st.session_state.current_lab:
                     background: var(--secondary-background-color);
                     color: var(--text-color);
                 ">
-                    <h4 style="color: var(--text-color); margin-top: 0;">{lab_config['title']}</h4>
-                    <p style="font-size: 0.9rem; color: var(--text-color-secondary);">
+                    <h4 style=\"color: var(--text-color); margin-top: 0; margin-bottom: 0.5rem;\">{lab_config['title']}</h4>
+                    <p style=\"font-size: 0.9rem; color: var(--text-color-secondary);\">
                         {lab_config['description']}
                     </p>
-                    <p style="font-size: 0.8rem; color: var(--text-color-secondary);">
+                    <p style=\"font-size: 0.8rem; color: var(--text-color-secondary); margin-top: auto;\">
                         Difficulty: {lab_config['difficulty']} • {
                             'Completed' if cert_generated else
                             'Quiz Passed' if quiz_passed else 'Not Started'
@@ -451,7 +459,7 @@ elif st.session_state.view_mode == "home" and not st.session_state.current_lab:
 
 elif st.session_state.view_mode == "documentation" and not st.session_state.current_lab:
     # Technical Documentation Page
-    st.title("📋 Technical Documentation")
+    st.title("Technical Documentation")
     st.markdown("---")
     st.markdown(TECHNICAL_DOCUMENTATION)
     

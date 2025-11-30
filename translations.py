@@ -1,11 +1,11 @@
 """
-Multi-language support for QuantumPlayground
+Multi-language support for Quantum Playground
 """
 
 TRANSLATIONS = {
     "en": {
-        "title": "QuantumPlayground",
-        "welcome": "Welcome to QuantumPlayground!",
+        "title": "Quantum Playground",
+        "welcome": "Welcome to Quantum Playground!",
         "about_platform": "About the Platform",
         "objectives": "Objectives:",
         "technical_stack": "Technical Stack",
@@ -106,8 +106,8 @@ TRANSLATIONS = {
         "pass_quiz_unlock": "Pass the quiz (≥70%) to unlock the certificate",
     },
     "fr": {
-        "title": "QuantumPlayground",
-        "welcome": "Bienvenue sur QuantumPlayground!",
+        "title": "Quantum Playground",
+        "welcome": "Bienvenue sur Quantum Playground!",
         "about_platform": "À propos de la plateforme",
         "objectives": "Objectifs:",
         "technical_stack": "Pile technique",
@@ -208,8 +208,8 @@ TRANSLATIONS = {
         "pass_quiz_unlock": "Réussissez le quiz (≥70%) pour débloquer le certificat",
     },
     "ro": {
-        "title": "QuantumPlayground",
-        "welcome": "Bine ai venit la QuantumPlayground!",
+        "title": "Quantum Playground",
+        "welcome": "Bine ai venit la Quantum Playground!",
         "about_platform": "Despre platformă",
         "objectives": "Obiective:",
         "technical_stack": "Stack tehnic",
@@ -310,8 +310,8 @@ TRANSLATIONS = {
         "pass_quiz_unlock": "Treci quiz-ul (≥70%) pentru a debloca certificatul",
     },
     "hi": {
-        "title": "क्वांटमप्लेग्राउंड",
-        "welcome": "क्वांटमप्लेग्राउंड में आपका स्वागत है!",
+        "title": "क्वांटम प्लेग्राउंड",
+        "welcome": "क्वांटम प्लेग्राउंड में आपका स्वागत है!",
         "about_platform": "मंच के बारे में",
         "objectives": "उद्देश्य:",
         "technical_stack": "तकनीकी स्टैक",
@@ -412,8 +412,8 @@ TRANSLATIONS = {
         "pass_quiz_unlock": "प्रमाणपत्र अनलॉक करने के लिए प्रश्नोत्तरी (≥70%) पास करें",
     },
     "es": {
-        "title": "QuantumPlayground",
-        "welcome": "¡Bienvenido a QuantumPlayground!",
+        "title": "Quantum Playground",
+        "welcome": "¡Bienvenido a Quantum Playground!",
         "about_platform": "Sobre la Plataforma",
         "objectives": "Objetivos:",
         "technical_stack": "Stack Técnico",

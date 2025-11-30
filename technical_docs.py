@@ -1,9 +1,9 @@
 """
-Technical Documentation for QuantumPlayground
+Technical Documentation for Quantum Playground
 """
 
 TECHNICAL_DOCUMENTATION = """
-# QuantumPlayground Technical Documentation
+# Quantum Playground Technical Documentation
 
 ## 1. Architecture Overview
 
