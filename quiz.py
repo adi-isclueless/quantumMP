@@ -3,6 +3,7 @@ Quiz module for testing knowledge after theory sections
 """
 
 import streamlit as st
+from translations import get_text
 from lab_config import get_lab
 from progress_store import save_quiz_score, set_lab_progress_flag
 
@@ -17,12 +18,13 @@ def render_quiz(lab_name: str):
             break
     
     if not lab_config or "quiz" not in lab_config:
-        st.error("Quiz not available for this lab")
+        st.error(get_text("lab_not_found", st.session_state.get("language", "en")))
         return
     
     quiz = lab_config["quiz"]
-    st.header("Test Your Knowledge")
-    st.markdown("Answer the following questions to test your understanding of the theory.")
+    lang = st.session_state.get("language", "en")
+    st.header(get_text("test_knowledge", lang))
+    st.markdown(get_text("quiz_intro", lang))
     
     # Initialize session state for quiz
     quiz_key = f"quiz_{lab_config['id']}"
@@ -37,12 +39,12 @@ def render_quiz(lab_name: str):
     
     # Display questions
     for i, question_data in enumerate(quiz):
-        st.markdown(f"### Question {i+1}")
+        st.markdown(f"### {get_text('question', lang)} {i+1}")
         st.markdown(question_data["question"])
         
         # Radio buttons for options
         answer = st.radio(
-            "Select your answer:",
+            get_text("select_answer", lang),
             question_data["options"],
             index=quiz_state["answers"][i] if quiz_state["answers"][i] is not None else None,
             key=f"q_{i}",
@@ -60,12 +62,12 @@ def render_quiz(lab_name: str):
             user_answer = quiz_state["answers"][i]
             
             if user_answer == correct_index:
-                st.success("Correct!")
+                st.success(get_text("correct", lang))
             else:
-                st.error(f"Incorrect. The correct answer is: {question_data['options'][correct_index]}")
+                st.error(f"{get_text('incorrect', lang)} {get_text('correct_answer_is', lang)} {question_data['options'][correct_index]}")
             
             # Show explanation
-            with st.expander("Explanation"):
+            with st.expander(get_text("explanation", lang)):
                 st.markdown(question_data["explanation"])
         
         st.divider()
@@ -74,7 +76,7 @@ def render_quiz(lab_name: str):
     col1, col2 = st.columns([1, 4])
     with col1:
         if not quiz_state["submitted"]:
-            if st.button("Submit Quiz", type="primary", use_container_width=True):
+            if st.button(get_text("submit_quiz", lang), type="primary", use_container_width=True):
                 # Calculate score
                 score = 0
                 for i, question_data in enumerate(quiz):
@@ -96,9 +98,9 @@ def render_quiz(lab_name: str):
         else:
             # Show score
             score_percentage = (quiz_state["score"] / len(quiz)) * 100
-            st.metric("Your Score", f"{quiz_state['score']}/{len(quiz)}", f"{score_percentage:.1f}%")
+            st.metric(get_text("your_score", lang), f"{quiz_state['score']}/{len(quiz)}", f"{score_percentage:.1f}%")
             
-            if st.button("Retake Quiz", use_container_width=True):
+            if st.button(get_text("retake_quiz", lang), use_container_width=True):
                 # Reset quiz
                 st.session_state[quiz_key] = {
                     "answers": [None] * len(quiz),
@@ -111,10 +113,10 @@ def render_quiz(lab_name: str):
     if quiz_state["submitted"]:
         score_percentage = (quiz_state["score"] / len(quiz)) * 100
         if score_percentage >= 70:
-            st.success(f"Congratulations! You passed with {score_percentage:.1f}%")
+            st.success(f"{get_text('passed_with', lang)} {score_percentage:.1f}%")
             set_lab_progress_flag(lab_config["id"], "quiz_passed", True)
         else:
-            st.warning(f"You scored {score_percentage:.1f}%. Review the theory and try again!")
+            st.warning(get_text("scored_review", lang).format(score=f"{score_percentage:.1f}%"))
 
 def get_quiz_score(lab_id: str):
     """Get quiz score for a lab"""

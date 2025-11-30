@@ -12,6 +12,8 @@ import re
 import os
 import platform
 import matplotlib.pyplot as plt
+import urllib.parse
+from translations import get_text
 
 def store_simulation_data(lab_id: str, metrics: dict = None, measurements: dict = None, figures: list = None):
     """
@@ -291,11 +293,12 @@ def render_certificate_page(lab_name: str):
             lab_config = config
             break
     
+    lang = st.session_state.get("language", "en")
     if not lab_config:
-        st.error("Lab not found")
+        st.error(get_text("lab_not_found", lang))
         return
     
-    st.header("Certificate of Completion")
+    st.header(get_text("certificate_title", lang))
     
     # Check if user has completed all requirements
     lab_id = lab_config["id"]
@@ -312,26 +315,26 @@ def render_certificate_page(lab_name: str):
     quiz_passed = has_passed_quiz(lab_id) or quiz_passed
     
     if not quiz_passed:
-        st.warning("Please complete and pass the quiz first (score >= 70%)")
-        if st.button("Go to Quiz", use_container_width=True):
+        st.warning(get_text("please_pass_quiz", lang))
+        if st.button(get_text("go_to_quiz", lang), use_container_width=True):
             st.session_state.current_lab_section = "Test"
             st.rerun()
         return
     
     if not simulation_completed:
-        st.info("Complete the simulation to mark this lab as fully completed.")
+        st.info(get_text("complete_simulation", lang))
         # Allow certificate generation even if simulation not completed, but warn
-        st.warning("Note: Certificate can be generated after passing the quiz.")
+        st.warning(get_text("note_certificate_after_quiz", lang))
     
     # Generate certificate
     user_name = st.session_state.get("user_name", "Student")
     
-    st.markdown(f"### Congratulations, {user_name}!")
-    st.markdown(f"You have successfully completed the **{lab_config['title']}** lab.")
+    st.markdown(f"### {get_text('congratulations', lang)}, {user_name}!")
+    st.markdown(f"{get_text('you_completed_lab', lang)} **{lab_config['title']}**.")
     
     # Generate and display certificate
-    if st.button("Generate Certificate", type="primary", use_container_width=True):
-        with st.spinner("Generating certificate..."):
+    if st.button(get_text("generate_certificate", lang), type="primary", use_container_width=True):
+        with st.spinner(get_text("generating_certificate", lang)):
             cert_image = generate_certificate(lab_id, user_name, lab_config)
             
             if cert_image:
@@ -345,7 +348,7 @@ def render_certificate_page(lab_name: str):
                 
                 # Download button
                 st.download_button(
-                    label="Download Certificate",
+                    label=get_text("download_certificate", lang),
                     data=img_buffer.getvalue(),
                     file_name=f"certificate_{lab_config['id']}_{datetime.now().strftime('%Y%m%d')}.png",
                     mime="image/png",
@@ -355,21 +358,50 @@ def render_certificate_page(lab_name: str):
                 # Mark certificate as generated
                 mark_certificate_generated(lab_id)
                 
-                st.success("Certificate generated successfully!")
+                st.success(get_text("certificate_generated", lang))
+                
+                # Social Sharing Buttons
+                st.markdown("---")
+                st.markdown("### " + get_text("share_achievement", lang))
+                
+                # Prepare sharing text
+                user_name = st.session_state.get("user_name", "Student")
+                share_text = f"I just completed '{lab_config['title']}' on QuantumPlayground! 🎓 #QuantumComputing #QuantumPlayground"
+                share_url = "https://quantumplayground.streamlit.app"  # Update with your actual URL
+                
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    linkedin_url = f"https://www.linkedin.com/sharing/share-offsite/?url={urllib.parse.quote(share_url)}"
+                    st.markdown(f"[Share on LinkedIn]({linkedin_url})", unsafe_allow_html=True)
+                    if st.button(get_text("share_linkedin", lang), use_container_width=True, key="share_linkedin"):
+                        st.markdown(f'<meta http-equiv="refresh" content="0; url={linkedin_url}">', unsafe_allow_html=True)
+                
+                with col2:
+                    twitter_url = f"https://twitter.com/intent/tweet?text={urllib.parse.quote(share_text)}&url={urllib.parse.quote(share_url)}"
+                    st.markdown(f"[Share on Twitter]({twitter_url})", unsafe_allow_html=True)
+                    if st.button(get_text("share_twitter", lang), use_container_width=True, key="share_twitter"):
+                        st.markdown(f'<meta http-equiv="refresh" content="0; url={twitter_url}">', unsafe_allow_html=True)
+                
+                with col3:
+                    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={urllib.parse.quote(share_url)}"
+                    st.markdown(f"[Share on Facebook]({facebook_url})", unsafe_allow_html=True)
+                    if st.button(get_text("share_facebook", lang), use_container_width=True, key="share_facebook"):
+                        st.markdown(f'<meta http-equiv="refresh" content="0; url={facebook_url}">', unsafe_allow_html=True)
     
     # Generate Report button
     st.markdown("---")
-    st.markdown("### Generate Lab Report")
-    st.markdown("Create a comprehensive PDF report containing the experiment details, theory, and conclusions.")
+    st.markdown("### " + get_text("generate_lab_report", lang))
+    st.markdown(get_text("report_intro", lang))
     
-    if st.button("Generate Report", type="primary", use_container_width=True):
-        with st.spinner("Generating PDF report..."):
+    if st.button(get_text("generate_report", lang), type="primary", use_container_width=True):
+        with st.spinner(get_text("generating_report", lang)):
             pdf_buffer = generate_lab_report(lab_config, user_name)
             
             if pdf_buffer:
-                st.success("Report generated successfully!")
+                st.success(get_text("report_generated", lang))
                 st.download_button(
-                    label="Download Report (PDF)",
+                    label=get_text("download_report_pdf", lang),
                     data=pdf_buffer.getvalue(),
                     file_name=f"report_{lab_config['id']}_{datetime.now().strftime('%Y%m%d')}.pdf",
                     mime="application/pdf",
