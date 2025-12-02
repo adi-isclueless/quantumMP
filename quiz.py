@@ -77,24 +77,29 @@ def render_quiz(lab_name: str):
     with col1:
         if not quiz_state["submitted"]:
             if st.button(get_text("submit_quiz", lang), type="primary", use_container_width=True):
-                # Calculate score
-                score = 0
-                for i, question_data in enumerate(quiz):
-                    if quiz_state["answers"][i] == question_data["correct"]:
-                        score += 1
-                
-                quiz_state["score"] = score
-                quiz_state["submitted"] = True
-                
-                # Store in session state
-                score_payload = {
-                    "score": score,
-                    "total": len(quiz),
-                    "percentage": (score / len(quiz)) * 100
-                }
-                save_quiz_score(lab_config["id"], score_payload)
-                
-                st.rerun()
+                # Validate that all questions are answered
+                unanswered = [i+1 for i, ans in enumerate(quiz_state["answers"]) if ans is None]
+                if unanswered:
+                    st.error(f"⚠️ Please answer all questions before submitting. Unanswered: {', '.join(map(str, unanswered))}")
+                else:
+                    # Calculate score
+                    score = 0
+                    for i, question_data in enumerate(quiz):
+                        if quiz_state["answers"][i] == question_data["correct"]:
+                            score += 1
+                    
+                    quiz_state["score"] = score
+                    quiz_state["submitted"] = True
+                    
+                    # Store in session state
+                    score_payload = {
+                        "score": score,
+                        "total": len(quiz),
+                        "percentage": (score / len(quiz)) * 100
+                    }
+                    save_quiz_score(lab_config["id"], score_payload)
+                    
+                    st.rerun()
         else:
             # Show score
             score_percentage = (quiz_state["score"] / len(quiz)) * 100

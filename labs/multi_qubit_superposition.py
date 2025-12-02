@@ -196,5 +196,20 @@ def run():
             figures.append(save_figure_to_data(fig_state, 'Statevector Representation'))
             plt.close(fig_state)
         
+        # Generate probability distributions for different qubit configurations
+        for n_qubits in range(1, min(num_qubits + 1, 5)):  # Up to 4 qubits or current selection
+            qc_temp = QuantumCircuit(n_qubits)
+            for i in range(n_qubits):
+                qc_temp.h(i)
+            qc_temp.measure_all()
+            
+            backend_temp = AerSimulator()
+            job_temp = backend_temp.run(qc_temp, shots=shots)
+            counts_temp = job_temp.result().get_counts()
+            
+            fig_dist = plot_histogram(counts_temp)
+            figures.append(save_figure_to_data(fig_dist, f'{n_qubits}-Qubit Superposition Distribution'))
+            plt.close(fig_dist)
+        
         store_simulation_data(lab_id, metrics=metrics, measurements=counts, figures=figures)
 

@@ -105,7 +105,7 @@ if st.session_state.view_mode != "welcome":
         # Language selector
         lang_options = {"English": "en", "हिंदी (Hindi)": "hi", "Español (Spanish)": "es", "Français (French)": "fr", "Română (Romanian)": "ro"}
         selected_lang = st.selectbox(
-            get_text("", st.session_state.language),
+            "Language / भाषा",
             options=list(lang_options.keys()),
             index=list(lang_options.values()).index(st.session_state.language),
             key="lang_selector"
@@ -473,119 +473,245 @@ elif st.session_state.view_mode == "profile" and not st.session_state.current_la
     st.title("Your Profile")
     st.markdown("---")
     
-    # User Information Card
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown(f"""
-        <div style="
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 30px;
-            border-radius: 15px;
-            color: white;
-            text-align: center;
-        ">
-            <h2 style="margin-top: 0; color: white;">{st.session_state.user_name or st.session_state.username}</h2>
-            <p style="font-size: 1rem; margin: 10px 0;">@{st.session_state.username}</p>
-            <p style="font-size: 0.95rem; margin: 10px 0;">{st.session_state.email}</p>
-        </div>
-        """, unsafe_allow_html=True)
+    # Create tabs for Profile and Settings
+    profile_tab1, profile_tab2 = st.tabs(["Overview", "Settings"])
     
-    st.markdown("")
-    
-    # Statistics Section
-    st.markdown("## Your Statistics")
-    
-    total_labs = len(LABS)
-    completed = sum(1 for lab_id in [config['id'] for config in LABS.values()] if has_certificate(lab_id))
-    quiz_passed_count = sum(1 for lab_id in [config['id'] for config in LABS.values()] if has_passed_quiz(lab_id))
-    not_started = total_labs - completed - (quiz_passed_count - completed)
-    
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Total Labs", total_labs)
-    with col2:
-        st.metric("Completed", completed)
-    with col3:
-        st.metric("In Progress", quiz_passed_count - completed)
-    with col4:
-        st.metric("Not Started", not_started)
-    
-    st.markdown("---")
-    
-    # Completed Experiments Section
-    st.markdown("## Completed Experiments")
-    
-    completed_labs = []
-    in_progress_labs = []
-    not_started_labs = []
-    
-    for lab_name, lab_config in LABS.items():
-        lab_id = lab_config["id"]
-        cert_generated = has_certificate(lab_id)
-        quiz_passed = has_passed_quiz(lab_id)
+    with profile_tab1:
+        # User Information Card
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.markdown(f"""
+            <div style="
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 30px;
+                border-radius: 15px;
+                color: white;
+                text-align: center;
+            ">
+                <h2 style="margin-top: 0; color: white;">{st.session_state.user_name or st.session_state.username}</h2>
+                <p style="font-size: 1rem; margin: 10px 0;">@{st.session_state.username}</p>
+                <p style="font-size: 0.95rem; margin: 10px 0;">{st.session_state.email}</p>
+            </div>
+            """, unsafe_allow_html=True)
         
-        lab_info = {
-            'title': lab_config['title'],
-            'category': lab_config['category'],
-            'difficulty': lab_config['difficulty'],
-            'lab_id': lab_id
-        }
+            st.markdown("")
         
-        if cert_generated:
-            completed_labs.append(lab_info)
-        elif quiz_passed:
-            in_progress_labs.append(lab_info)
+        # Statistics Section
+        st.markdown("## Your Statistics")
+        
+        total_labs = len(LABS)
+        completed = sum(1 for lab_id in [config['id'] for config in LABS.values()] if has_certificate(lab_id))
+        quiz_passed_count = sum(1 for lab_id in [config['id'] for config in LABS.values()] if has_passed_quiz(lab_id))
+        not_started = total_labs - completed - (quiz_passed_count - completed)
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Total Labs", total_labs)
+        with col2:
+            st.metric("Completed", completed)
+        with col3:
+            st.metric("In Progress", quiz_passed_count - completed)
+        with col4:
+            st.metric("Not Started", not_started)
+        
+        st.markdown("---")
+        
+        # Completed Experiments Section
+        st.markdown("## Completed Experiments")
+        
+        completed_labs = []
+        in_progress_labs = []
+        not_started_labs = []
+        
+        for lab_name, lab_config in LABS.items():
+            lab_id = lab_config["id"]
+            cert_generated = has_certificate(lab_id)
+            quiz_passed = has_passed_quiz(lab_id)
+            
+            lab_info = {
+                'title': lab_config['title'],
+                'category': lab_config['category'],
+                'difficulty': lab_config['difficulty'],
+                'lab_id': lab_id
+            }
+            
+            if cert_generated:
+                completed_labs.append(lab_info)
+            elif quiz_passed:
+                in_progress_labs.append(lab_info)
+            else:
+                not_started_labs.append(lab_info)
+        
+        # Display Completed Labs
+        if completed_labs:
+            for lab in completed_labs:
+                col1, col2, col3, col4 = st.columns([2.5, 0.8, 0.8, 0.9])
+                with col1:
+                    st.markdown(f"**{lab['title']}**")
+                    st.markdown(f"<small>{lab['category']}</small>", unsafe_allow_html=True)
+                with col2:
+                    st.markdown(f"<small>{lab['difficulty']}</small>", unsafe_allow_html=True)
+                with col3:
+                    st.markdown("<small style='color: #4caf50; font-weight: bold;'>Completed</small>", unsafe_allow_html=True)
+                with col4:
+                    if st.button("View", key=f"view_{lab['lab_id']}", use_container_width=True):
+                        st.session_state.current_lab = lab['lab_id']
+                        st.session_state.current_lab_section = "Certificate"
+                        st.rerun()
+                st.divider()
         else:
-            not_started_labs.append(lab_info)
+            st.info("No completed labs yet. Start an experiment to get started!")
+        
+        st.markdown("")
+        st.markdown("## In Progress")
+        
+        if in_progress_labs:
+            for lab in in_progress_labs:
+                col1, col2, col3, col4 = st.columns([2.5, 0.8, 0.8, 0.9])
+                with col1:
+                    st.markdown(f"**{lab['title']}**")
+                    st.markdown(f"<small>{lab['category']}</small>", unsafe_allow_html=True)
+                with col2:
+                    st.markdown(f"<small>{lab['difficulty']}</small>", unsafe_allow_html=True)
+                with col3:
+                    st.markdown("<small style='color: #2196f3; font-weight: bold;'>Quiz Passed</small>", unsafe_allow_html=True)
+                with col4:
+                    if st.button("Continue", key=f"continue_{lab['lab_id']}", use_container_width=True):
+                        st.session_state.current_lab = lab['lab_id']
+                        st.session_state.current_lab_section = "Simulation"
+                        st.rerun()
+                st.divider()
+        else:
+            st.info("No labs in progress.")
     
-    # Display Completed Labs
-    if completed_labs:
-        for lab in completed_labs:
-            col1, col2, col3, col4 = st.columns([2.5, 0.8, 0.8, 0.9])
-            with col1:
-                st.markdown(f"**{lab['title']}**")
-                st.markdown(f"<small>{lab['category']}</small>", unsafe_allow_html=True)
-            with col2:
-                st.markdown(f"<small>{lab['difficulty']}</small>", unsafe_allow_html=True)
-            with col3:
-                st.markdown("<small style='color: #4caf50; font-weight: bold;'>Completed</small>", unsafe_allow_html=True)
-            with col4:
-                if st.button("View", key=f"view_{lab['lab_id']}", use_container_width=True):
-                    st.session_state.current_lab = lab['lab_id']
-                    st.session_state.current_lab_section = "Certificate"
-                    st.rerun()
-            st.divider()
-    else:
-        st.info("No completed labs yet. Start an experiment to get started!")
+        st.markdown("")
+        
+        # Back to Home Button
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            if st.button("← Back to Experiments", use_container_width=True):
+                st.session_state.view_mode = "home"
+                st.rerun()
     
-    st.markdown("")
-    st.markdown("## In Progress")
-    
-    if in_progress_labs:
-        for lab in in_progress_labs:
-            col1, col2, col3, col4 = st.columns([2.5, 0.8, 0.8, 0.9])
-            with col1:
-                st.markdown(f"**{lab['title']}**")
-                st.markdown(f"<small>{lab['category']}</small>", unsafe_allow_html=True)
-            with col2:
-                st.markdown(f"<small>{lab['difficulty']}</small>", unsafe_allow_html=True)
-            with col3:
-                st.markdown("<small style='color: #2196f3; font-weight: bold;'>Quiz Passed</small>", unsafe_allow_html=True)
-            with col4:
-                if st.button("Continue", key=f"continue_{lab['lab_id']}", use_container_width=True):
-                    st.session_state.current_lab = lab['lab_id']
-                    st.session_state.current_lab_section = "Simulation"
-                    st.rerun()
-            st.divider()
-    else:
-        st.info("No labs in progress.")
-    
-    st.markdown("")
-    
-    # Back to Home Button
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        if st.button("← Back to Experiments", use_container_width=True):
+    with profile_tab2:
+        # Settings Page
+        st.markdown("## Account Settings")
+        st.markdown("Update your personal information and account security.")
+        st.markdown("---")
+        
+        from auth import update_user_name, update_username, update_email, update_password, send_otp_email, create_otp_record, verify_otp, is_valid_email
+        
+        # Initialize settings state
+        if 'settings_otp_step' not in st.session_state:
+            st.session_state.settings_otp_step = None
+        if 'pending_new_email' not in st.session_state:
+            st.session_state.pending_new_email = None
+        
+        # Section 1: Update Name
+        with st.expander("Update Full Name", expanded=False):
+            new_name = st.text_input("New Full Name", value=st.session_state.user_name, key="update_name_input")
+            if st.button("Update Name", key="update_name_btn"):
+                if new_name and new_name != st.session_state.user_name:
+                    if update_user_name(st.session_state.user_id, new_name):
+                        st.session_state.user_name = new_name
+                        st.success("Name updated successfully!")
+                        st.rerun()
+                    else:
+                        st.error("Failed to update name")
+                else:
+                    st.warning("Please enter a different name")
+        
+        # Section 2: Update Username
+        with st.expander("Update Username", expanded=False):
+            st.info("Changing your username will affect your login credentials.")
+            new_username = st.text_input("New Username", value=st.session_state.username, key="update_username_input")
+            if st.button("Update Username", key="update_username_btn"):
+                if new_username and new_username != st.session_state.username:
+                    success, error = update_username(st.session_state.user_id, new_username)
+                    if success:
+                        st.session_state.username = new_username
+                        st.success("Username updated successfully!")
+                        st.rerun()
+                    else:
+                        st.error(f"{error}")
+                else:
+                    st.warning("Please enter a different username")
+        
+        # Section 3: Update Email with OTP
+        with st.expander("Update Email Address", expanded=False):
+            if st.session_state.settings_otp_step == 'email_verification':
+                st.info("An OTP has been sent to your new email address. Please verify to complete the change.")
+                st.text(f"New Email: {st.session_state.pending_new_email}")
+                
+                otp_input = st.text_input("Enter OTP (6 digits)", max_chars=6, key="email_otp_input")
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("Verify OTP", type="primary", key="verify_email_otp_btn"):
+                        if verify_otp(st.session_state.pending_new_email, otp_input):
+                            success, error = update_email(st.session_state.user_id, st.session_state.pending_new_email)
+                            if success:
+                                st.session_state.email = st.session_state.pending_new_email
+                                st.session_state.settings_otp_step = None
+                                st.session_state.pending_new_email = None
+                                st.success("Email updated successfully!")
+                                st.rerun()
+                            else:
+                                st.error(f"{error}")
+                        else:
+                            st.error("Invalid OTP. Please try again.")
+                
+                with col2:
+                    if st.button("Cancel", key="cancel_email_change_btn"):
+                        st.session_state.settings_otp_step = None
+                        st.session_state.pending_new_email = None
+                        st.rerun()
+            else:
+                st.info("Changing your email requires OTP verification.")
+                new_email = st.text_input("New Email Address", value=st.session_state.email, key="update_email_input")
+                if st.button("Send OTP to New Email", key="send_email_otp_btn"):
+                    if new_email and new_email != st.session_state.email:
+                        if is_valid_email(new_email):
+                            # Send OTP to new email
+                            with st.spinner("Sending OTP to new email..."):
+                                otp = create_otp_record(new_email)
+                                if send_otp_email(new_email, otp, st.session_state.user_name):
+                                    st.session_state.settings_otp_step = 'email_verification'
+                                    st.session_state.pending_new_email = new_email
+                                    st.success("OTP sent to your new email!")
+                                    st.rerun()
+                                else:
+                                    st.error("Failed to send OTP. Please try again.")
+                        else:
+                            st.error("Please enter a valid email address")
+                    else:
+                        st.warning("Please enter a different email address")
+        
+        # Section 4: Update Password
+        with st.expander("Change Password", expanded=False):
+            st.info("Enter your current password to set a new one.")
+            current_password = st.text_input("Current Password", type="password", key="current_password_input")
+            new_password = st.text_input("New Password", type="password", key="new_password_input")
+            confirm_password = st.text_input("Confirm New Password", type="password", key="confirm_password_input")
+            
+            if st.button("Update Password", key="update_password_btn"):
+                if not current_password or not new_password or not confirm_password:
+                    st.error("Please fill in all password fields")
+                elif new_password != confirm_password:
+                    st.error("New passwords do not match")
+                elif len(new_password) < 8:
+                    st.error("New password must be at least 8 characters long")
+                else:
+                    success, error = update_password(st.session_state.user_id, current_password, new_password)
+                    if success:
+                        st.success("Password updated successfully!")
+                    else:
+                        st.error(f"{error}")
+        
+        st.markdown("---")
+        
+        # Back button
+        if st.button("← Back to Experiments", key="settings_back_btn", use_container_width=False):
             st.session_state.view_mode = "home"
             st.rerun()
 

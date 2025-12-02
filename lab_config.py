@@ -11,6 +11,8 @@ LABS = {
         "description": "Learn how quantum states behave when measured in different bases (Z, X, Y).",
         "category": "Quantum Foundations",
         "difficulty": "Beginner",
+        "estimated_time": "15-20 min",
+        "prerequisites": [],
         "theory": """
 
 ## 1. Quantum Bases
@@ -99,6 +101,8 @@ The Bloch sphere is a geometric representation of a quantum state:
         "description": "Generate truly random numbers using quantum superposition and measurement.",
         "category": "Quantum Foundations",
         "difficulty": "Beginner",
+        "estimated_time": "20-25 min",
+        "prerequisites": [],
         "theory": """
 
 ## Introduction
@@ -205,6 +209,8 @@ Quantum randomness comes from:
         "description": "Use an ancilla qubit to determine the parity of multi-qubit states.",
         "category": "Quantum Logic & Operations",
         "difficulty": "Intermediate",
+        "estimated_time": "20-30 min",
+        "prerequisites": ["multi_qubit_superposition"],
         "theory": """
 
 ## Introduction
@@ -316,6 +322,8 @@ For input |101>:
         "description": "Analyze all four Bell states, their measurement outcomes, correlations, and how noise affects entanglement.",
         "category": "Quantum Entanglement & Noise",
         "difficulty": "Intermediate",
+        "estimated_time": "25-35 min",
+        "prerequisites": ["multi_qubit_superposition"],
         "theory": """
 
 ## Part 1: Bell State Analysis
@@ -478,6 +486,8 @@ Fidelity measures how close a noisy state is to the ideal state:
         "description": "Learn the first quantum key distribution protocol for secure communication.",
         "category": "Quantum Communication Protocols",
         "difficulty": "Advanced",
+        "estimated_time": "30-40 min",
+        "prerequisites": ["different_states"],
         "theory": """
 
 ## Introduction
@@ -585,6 +595,8 @@ If Eve intercepts:
         "description": "Transmit two classical bits using a single qubit through quantum entanglement.",
         "category": "Quantum Communication Protocols",
         "difficulty": "Intermediate",
+        "estimated_time": "20-30 min",
+        "prerequisites": ["multi_qubit_superposition"],
         "theory": """
 ## Introduction
 
@@ -697,6 +709,8 @@ Bob performs:
         "description": "Transfer a quantum state from Alice to Bob using entanglement and classical communication.",
         "category": "Quantum Communication Protocols",
         "difficulty": "Advanced",
+        "estimated_time": "30-40 min",
+        "prerequisites": ["supcod"],
         "theory": """
 ## Introduction
 
@@ -808,6 +822,8 @@ Based on Alice's measurement result, Bob applies:
         "description": "Reconstruct unknown quantum states through measurements in different bases.",
         "category": "Quantum State Characterization",
         "difficulty": "Advanced",
+        "estimated_time": "35-45 min",
+        "prerequisites": ["different_states"],
         "theory": """
 
 ## 1. The Problem
@@ -916,6 +932,8 @@ Fidelity measures reconstruction quality:
         "description": "Prepare a 3-qubit equal superposition state and verify uniform probability distribution.",
         "category": "Quantum Foundations",
         "difficulty": "Beginner",
+        "estimated_time": "20-25 min",
+        "prerequisites": ["different_states"],
         "theory": """
 
 ## 1. Product State Superposition
@@ -1008,6 +1026,8 @@ To verify uniform superposition:
         "description": "Create a GHZ state (|000> + |111>)/√2 and show that measuring one qubit determines the others.",
         "category": "Quantum Entanglement & Noise",
         "difficulty": "Intermediate",
+        "estimated_time": "20-30 min",
+        "prerequisites": ["multi_qubit_superposition"],
         "theory": """
 # GHZ State - Three-Qubit Entanglement
 
@@ -1113,6 +1133,8 @@ To create a GHZ state:
         "description": "Prepare the W state (|001> + |010> + |100>)/√3 and compare its robustness to qubit loss vs. GHZ state.",
         "category": "Quantum Entanglement & Noise",
         "difficulty": "Intermediate",
+        "estimated_time": "25-35 min",
+        "prerequisites": ["ghz_state"],
         "theory": """
 
 ## Introduction
@@ -1217,6 +1239,8 @@ Creating a W state is more complex than GHZ:
         "description": "Verify equivalence of circuits by comparing simulation outcomes.",
         "category": "Quantum Logic & Operations",
         "difficulty": "Intermediate",
+        "estimated_time": "20-30 min",
+        "prerequisites": ["different_states"],
         "theory": """
 
 ## Introduction
@@ -1327,6 +1351,8 @@ Two circuits are equivalent if:
         "description": "Encode a qubit into 3 qubits to detect single bit-flip errors and demonstrate error detection via measurement.",
         "category": "Quantum Error Correction",
         "difficulty": "Advanced",
+        "estimated_time": "30-40 min",
+        "prerequisites": ["parity", "noise"],
         "theory": """
 
 
@@ -1434,6 +1460,8 @@ Once error is detected:
         "description": "Extend bit-flip code idea to detect phase errors. Show that errors in |+>/|−> basis can be caught.",
         "category": "Quantum Error Correction",
         "difficulty": "Advanced",
+        "estimated_time": "30-40 min",
+        "prerequisites": ["bit_flip_code"],
         "theory": """
 
 ## 1. Encoding in X Basis

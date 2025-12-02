@@ -119,7 +119,8 @@ def store_simulation_data(lab_id: str, metrics: dict = None, measurements: dict 
                 # skip objects we can't handle
                 continue
 
-        st.session_state.lab_simulation_data[lab_id]["figures"].extend(normalized)
+        # Replace figures instead of extending to avoid duplicates
+        st.session_state.lab_simulation_data[lab_id]["figures"] = normalized
 
 def save_figure_to_data(fig, caption: str = None):
     """
@@ -346,11 +347,15 @@ def render_certificate_page(lab_name: str):
                 # Display certificate
                 st.image(cert_image, use_container_width=True)
                 
-                # Download button
+                # Download button with improved filename
+                username = st.session_state.get("username", "user")
+                safe_lab_name = lab_config['title'].replace(" ", "_").replace("/", "-")
+                filename = f"QuantumPlayground_{safe_lab_name}_{username}_{datetime.now().strftime('%Y%m%d')}.png"
+                
                 st.download_button(
                     label=get_text("download_certificate", lang),
                     data=img_buffer.getvalue(),
-                    file_name=f"certificate_{lab_config['id']}_{datetime.now().strftime('%Y%m%d')}.png",
+                    file_name=filename,
                     mime="image/png",
                     use_container_width=True
                 )
@@ -362,32 +367,60 @@ def render_certificate_page(lab_name: str):
                 
                 # Social Sharing Buttons
                 st.markdown("---")
-                st.markdown("### " + get_text("share_achievement", lang))
+                st.markdown("### 🎉 " + get_text("share_achievement", lang))
                 
-                # Prepare sharing text
+                # Prepare sharing content
                 user_name = st.session_state.get("user_name", "Student")
-                share_text = f"I just completed '{lab_config['title']}' on Quantum Playground! 🎓 #QuantumComputing #QuantumPlayground"
-                share_url = "https://quantumplayground.streamlit.app"  # Update with your actual URL
+                username = st.session_state.get("username", "user")
+                lab_title = lab_config['title']
+                lab_category = lab_config.get('category', 'Quantum Computing')
+                
+                # Improved sharing text with more context
+                share_text = f"I just completed '{lab_title}' ({lab_category}) on Quantum Playground! 🎓✨\n\nLearned hands-on quantum computing through interactive simulations.\n\n#QuantumComputing #QuantumPhysics #STEM #Learning"
+                share_url = "https://quantumplayground.streamlit.app"  # Update with your actual deployed URL
+                
+                # Show shareable preview
+                st.info(f"📣 **Share Your Achievement!**\n\nCompleted: {lab_title}\nCategory: {lab_category}\nPlatform: Quantum Playground")
                 
                 col1, col2, col3 = st.columns(3)
                 
                 with col1:
+                    # LinkedIn with professional context
+                    linkedin_text = f"I'm excited to share that I've completed '{lab_title}' on Quantum Playground, an interactive quantum computing learning platform. Great hands-on experience with {lab_category}!"
                     linkedin_url = f"https://www.linkedin.com/sharing/share-offsite/?url={urllib.parse.quote(share_url)}"
-                    st.markdown(f"[Share on LinkedIn]({linkedin_url})", unsafe_allow_html=True)
-                    if st.button(get_text("share_linkedin", lang), use_container_width=True, key="share_linkedin"):
-                        st.markdown(f'<meta http-equiv="refresh" content="0; url={linkedin_url}">', unsafe_allow_html=True)
+                    st.link_button(
+                        "🔗 LinkedIn",
+                        linkedin_url,
+                        use_container_width=True,
+                        help="Share on LinkedIn (opens in new tab)"
+                    )
                 
                 with col2:
-                    twitter_url = f"https://twitter.com/intent/tweet?text={urllib.parse.quote(share_text)}&url={urllib.parse.quote(share_url)}"
-                    st.markdown(f"[Share on Twitter]({twitter_url})", unsafe_allow_html=True)
-                    if st.button(get_text("share_twitter", lang), use_container_width=True, key="share_twitter"):
-                        st.markdown(f'<meta http-equiv="refresh" content="0; url={twitter_url}">', unsafe_allow_html=True)
+                    # Twitter/X with hashtags
+                    twitter_text = f"Just completed '{lab_title}' on Quantum Playground! 🎓\n\n{lab_category} • Interactive Learning\n\n#QuantumComputing #QuantumPhysics #STEM"
+                    twitter_url = f"https://twitter.com/intent/tweet?text={urllib.parse.quote(twitter_text)}&url={urllib.parse.quote(share_url)}"
+                    st.link_button(
+                        "🐦 Twitter/X",
+                        twitter_url,
+                        use_container_width=True,
+                        help="Share on Twitter/X"
+                    )
                 
                 with col3:
-                    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={urllib.parse.quote(share_url)}"
-                    st.markdown(f"[Share on Facebook]({facebook_url})", unsafe_allow_html=True)
-                    if st.button(get_text("share_facebook", lang), use_container_width=True, key="share_facebook"):
-                        st.markdown(f'<meta http-equiv="refresh" content="0; url={facebook_url}">', unsafe_allow_html=True)
+                    # Facebook
+                    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={urllib.parse.quote(share_url)}&quote={urllib.parse.quote(f'Completed {lab_title} on Quantum Playground!')}"
+                    st.link_button(
+                        "📘 Facebook",
+                        facebook_url,
+                        use_container_width=True,
+                        help="Share on Facebook"
+                    )
+                
+                # Copy certificate link
+                st.markdown("---")
+                cert_filename = filename  # Use the same filename generated above
+                st.code(f"Certificate: {cert_filename}", language=None)
+                st.caption("💡 Tip: Download your certificate and upload it to LinkedIn under 'Licenses & Certifications' to showcase your quantum computing skills!")
     
     # Generate Report button
     st.markdown("---")
@@ -755,9 +788,13 @@ def generate_lab_report(lab_config: dict, user_name: str = None):
     simulation_data = None
     if "lab_simulation_data" in st.session_state:
         simulation_data = st.session_state.lab_simulation_data.get(lab_id)
+        if simulation_data:
+            num_figures = len(simulation_data.get('figures', []))
+            print(f"DEBUG: Found simulation data for {lab_id} with {num_figures} figures")
     
     # If no simulation data exists, create default figures for the report
     if simulation_data is None:
+        print(f"DEBUG: No simulation data for {lab_id}, using default figures")
         from lab_figures import get_lab_figures
         default_figures = get_lab_figures(lab_id)
         if default_figures:

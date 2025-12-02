@@ -211,7 +211,8 @@ def run():
         else:
             st.warning(f"GHZ state created but probabilities are not equal: P(|000⟩)={ratio_000:.3f}, P(|111⟩)={ratio_111:.3f}")
     else:
-        st.error("GHZ state not properly created. Expected only |000⟩ and |111⟩ states.")
+        st.error("❌ GHZ state verification failed: Expected only |000⟩ and |111⟩ states")
+        st.info("💡 **Tip**: GHZ states should show perfect correlations. Unwanted states may indicate noise or simulation errors.")
     
     # Store simulation data for PDF report
     from lab_config import LABS

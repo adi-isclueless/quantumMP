@@ -430,6 +430,7 @@ def run():
                     fid = state_fidelity(state_ideal, rho)
                     st.metric("Fidelity (Ideal vs Noisy)", f"{fid:.4f}")
             except Exception as e:
-                st.error(f"Density-matrix fidelity calculation failed: {e}")
+                st.error(f"⚠️ Fidelity calculation error: {e}")
+                st.info("💡 This can happen with extreme noise values or simulation issues. Try adjusting the noise parameter.")
         else:
             st.metric("Fidelity (Ideal vs Ideal)", "1.0000")

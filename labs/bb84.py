@@ -694,7 +694,8 @@ def run():
                         else:
                             st.warning("No shared key bits available after sifting and testing.")
                     else:
-                        st.error("⚠️ WARNING - QBER exceeds 11%. Eavesdropping detected! Key generation aborted for security.")
+                        st.error("🚨 **Security Alert**: QBER exceeds 11% - Possible eavesdropping detected!")
+                        st.info("💡 **What this means**: High error rate suggests communication is compromised. In real quantum cryptography, the key would be discarded and communication restarted.")
                         st.warning("The quantum channel is not secure. Do not use any key generated under these conditions.")
                 
         else:
@@ -754,7 +755,8 @@ def run():
                     if result['secure']:
                         st.success("SECURE - No eavesdropping detected!")
                     else:
-                        st.error("INSECURE - Possible eavesdropping!")
+                        st.error("⚠️ **Channel Insecure**: High QBER indicates potential eavesdropping")
+                        st.info("💡 Consider disabling Eve or using different parameters to see secure key generation.")
                     
                     st.markdown("#### Protocol Flow")
                     flow_fig = create_protocol_flow_viz(result)

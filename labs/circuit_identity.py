@@ -183,7 +183,8 @@ def run():
             st.success("Circuits are equivalent! Operators match.")
             equivalence = True
         else:
-            st.error("Circuits are NOT equivalent. Operators differ.")
+            st.error("❌ Circuits are NOT equivalent - Unitary operators differ")
+            st.info("💡 The circuits produce different transformations. Check gate sequences and parameters.")
             equivalence = False
             
         # Show operator matrices

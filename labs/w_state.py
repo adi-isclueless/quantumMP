@@ -116,7 +116,8 @@ def run():
             else:
                 st.warning(f"W state partially created. Expected 3 states, got {len(counts)}.")
         else:
-            st.error("W state not properly created.")
+            st.error("❌ W state creation failed")
+            st.info("💡 **Troubleshooting**: Try increasing the number of shots or check if noise is affecting the simulation.")
     
     with col2:
         st.markdown("### Statistics")
@@ -292,7 +293,8 @@ def run():
             else:
                 st.warning(f"W state created but probabilities are not uniform. Max error: {max_error:.3f}")
         else:
-            st.error(f"W state not properly created. Expected 3 states, got {len(counts)}.")
+            st.error(f"❌ W state verification failed: Expected 3 states (|001⟩, |010⟩, |100⟩), but got {len(counts)} states")
+            st.info("💡 This could be due to noise or measurement errors. Try running the simulation again.")
     else:
         st.error("W state not properly created. Missing expected states.")
     

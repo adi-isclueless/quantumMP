@@ -145,7 +145,6 @@ def create_multi_qubit_superposition_figures():
     figures = []
     
     # Figure 1: Circuit Diagram for 3-qubit superposition
-    fig = plt.figure(figsize=(10, 6))
     qc = QuantumCircuit(3)
     qc.h(0)
     qc.h(1)
@@ -192,7 +191,6 @@ def create_ghz_state_figures():
     figures = []
     
     # Figure 1: GHZ Circuit
-    fig = plt.figure(figsize=(10, 5))
     qc = QuantumCircuit(3)
     qc.h(0)
     qc.cx(0, 1)
@@ -239,16 +237,39 @@ def create_bell_state_figures():
     """Bell State / W State / Entanglement figures"""
     figures = []
     
-    # Figure 1: Bell States Circuit
-    fig = plt.figure(figsize=(10, 6))
-    qc = QuantumCircuit(2)
-    qc.h(0)
-    qc.cx(0, 1)
-    qc.measure_all()
+    # Figure 1: All Four Bell State Circuits (as separate images in one composite)
+    bell_state_configs = [
+        ('|Φ⁺⟩ = (|00⟩ + |11⟩)/√2', 0),
+        ('|Φ⁻⟩ = (|00⟩ − |11⟩)/√2', 1),
+        ('|Ψ⁺⟩ = (|01⟩ + |10⟩)/√2', 2),
+        ('|Ψ⁻⟩ = (|01⟩ − |10⟩)/√2', 3),
+    ]
     
-    circuit_img = circuit_drawer(qc, output='mpl', scale=0.7)
-    figures.append(save_figure_to_data(circuit_img, 'Bell State Circuit: (|00⟩ + |11⟩)/√2'))
-    plt.close(circuit_img)
+    # Create individual circuit figures
+    for state_name, gate_config in bell_state_configs:
+        qc = QuantumCircuit(2)
+        
+        # Build circuit based on configuration
+        if gate_config == 0:  # |Φ⁺⟩
+            qc.h(0)
+            qc.cx(0, 1)
+        elif gate_config == 1:  # |Φ⁻⟩
+            qc.h(0)
+            qc.cx(0, 1)
+            qc.z(0)
+        elif gate_config == 2:  # |Ψ⁺⟩
+            qc.h(0)
+            qc.cx(0, 1)
+            qc.x(1)
+        elif gate_config == 3:  # |Ψ⁻⟩
+            qc.h(0)
+            qc.cx(0, 1)
+            qc.x(1)
+            qc.z(0)
+        
+        circuit_img = circuit_drawer(qc, output='mpl', scale=0.7)
+        figures.append(save_figure_to_data(circuit_img, f'{state_name} Circuit'))
+        plt.close(circuit_img)
     
     # Figure 2: Bell States Overview
     fig, ax = plt.subplots(figsize=(11, 6))
@@ -285,7 +306,6 @@ def create_w_state_figures():
     figures = []
     
     # Figure 1: W State Circuit
-    fig = plt.figure(figsize=(10, 6))
     qc = QuantumCircuit(3)
     qc.x(0)
     qc.cx(0, 1)
@@ -340,7 +360,6 @@ def create_bit_flip_code_figures():
     figures = []
     
     # Figure 1: Bit Flip Code Circuit
-    fig = plt.figure(figsize=(12, 6))
     qc = QuantumCircuit(3)
     qc.cx(0, 1)
     qc.cx(0, 2)
@@ -389,7 +408,6 @@ def create_phase_flip_code_figures():
     figures = []
     
     # Figure 1: Phase Flip Code Circuit
-    fig = plt.figure(figsize=(12, 6))
     qc = QuantumCircuit(3)
     qc.h(0)
     qc.h(1)
@@ -442,7 +460,6 @@ def create_superdense_coding_figures():
     figures = []
     
     # Figure 1: Superdense Coding Circuit
-    fig = plt.figure(figsize=(12, 6))
     qc = QuantumCircuit(2)
     qc.h(0)
     qc.cx(0, 1)
@@ -492,7 +509,6 @@ def create_teleportation_figures():
     figures = []
     
     # Figure 1: Teleportation Circuit
-    fig = plt.figure(figsize=(12, 7))
     qc = QuantumCircuit(3, 2)
     qc.cx(0, 1)
     qc.h(0)
@@ -644,7 +660,6 @@ def create_parity_figures():
     figures = []
     
     # Figure 1: Parity Check Circuit
-    fig = plt.figure(figsize=(11, 6))
     qc = QuantumCircuit(3)
     qc.cx(0, 2)  # Data qubit to ancilla
     qc.cx(1, 2)  # Data qubit to ancilla
@@ -737,7 +752,32 @@ def create_noise_figures():
     """Quantum Noise and Error Models figures"""
     figures = []
     
-    # Figure 1: Common Error Types
+    # Figure 1: All Four Bell State Circuits
+    bell_state_configs = [
+        ('|Φ⁺⟩ = (|00⟩ + |11⟩)/√2', 'phi_plus'),
+        ('|Φ⁻⟩ = (|00⟩ − |11⟩)/√2', 'phi_minus'),
+        ('|Ψ⁺⟩ = (|01⟩ + |10⟩)/√2', 'psi_plus'),
+        ('|Ψ⁻⟩ = (|01⟩ − |10⟩)/√2', 'psi_minus'),
+    ]
+    
+    for state_name, state_type in bell_state_configs:
+        qc = QuantumCircuit(2)
+        qc.h(0)
+        qc.cx(0, 1)
+        
+        if state_type == 'phi_minus':
+            qc.z(0)
+        elif state_type == 'psi_plus':
+            qc.x(1)
+        elif state_type == 'psi_minus':
+            qc.x(1)
+            qc.z(0)
+        
+        circuit_img = circuit_drawer(qc, output='mpl', scale=0.7)
+        figures.append(save_figure_to_data(circuit_img, f'{state_name} Circuit'))
+        plt.close(circuit_img)
+    
+    # Figure 2: Common Error Types
     fig, ax = plt.subplots(figsize=(11, 7))
     ax.text(0.5, 0.97, 'Common Quantum Noise Models', 
             ha='center', fontsize=14, fontweight='bold', transform=ax.transAxes)
@@ -808,7 +848,6 @@ def create_randomng_figures():
     plt.close(fig)
     
     # Figure 2: QRNG Circuit
-    fig = plt.figure(figsize=(10, 5))
     qc = QuantumCircuit(3)
     qc.h(0)
     qc.h(1)

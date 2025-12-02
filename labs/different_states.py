@@ -101,6 +101,14 @@ def run():
             break
     
     if lab_id:
+        # Clear any existing simulation data for this lab to prevent stale figures
+        if "lab_simulation_data" in st.session_state and lab_id in st.session_state.lab_simulation_data:
+            st.session_state.lab_simulation_data[lab_id] = {
+                "metrics": {},
+                "measurements": {},
+                "figures": []
+            }
+        
         # Calculate probabilities
         total = sum(counts.values())
         metrics = {
@@ -112,11 +120,66 @@ def run():
             prob = (count / total * 100) if total > 0 else 0
             metrics[f'P(|{state}⟩)'] = f"{prob:.2f}%"
         
-        figures = [
+        # Generate comprehensive measurement data for both states in all bases
+        all_figures = [
             save_figure_to_data(bloch_fig, f'Bloch Sphere - {state_choice} State'),
             save_figure_to_data(hist_fig, f'Measurement Results in {basis_choice}-basis'),
             save_figure_to_data(circ_fig, 'Quantum Circuit')
         ]
         
-        store_simulation_data(lab_id, metrics=metrics, measurements=counts, figures=figures)
+        # Add measurements for |+> state in all three bases
+        for basis in ['Z', 'X', 'Y']:
+            qc_plus = QuantumCircuit(1)
+            qc_plus.h(0)
+            meas_plus = qc_plus.copy()
+            if basis == 'X':
+                meas_plus.h(0)
+            elif basis == 'Y':
+                meas_plus.sdg(0)
+                meas_plus.h(0)
+            meas_plus.measure_all()
+            
+            job_plus = backend.run(meas_plus, shots=shots)
+            counts_plus = job_plus.result().get_counts()
+            
+            # Create a new figure explicitly for each plot
+            fig_plus = plt.figure(figsize=(8, 6))
+            hist_plus = plot_histogram(counts_plus, figsize=(8, 6))
+            all_figures.append(save_figure_to_data(hist_plus, f'|+⟩ State measured in {basis}-basis'))
+            plt.close(hist_plus)
+            plt.close(fig_plus)
+        
+        # Add measurements for |i> state in all three bases
+        for basis in ['Z', 'X', 'Y']:
+            qc_i = QuantumCircuit(1)
+            qc_i.h(0)
+            qc_i.s(0)
+            meas_i = qc_i.copy()
+            if basis == 'X':
+                meas_i.h(0)
+            elif basis == 'Y':
+                meas_i.sdg(0)
+                meas_i.h(0)
+            meas_i.measure_all()
+            
+            job_i = backend.run(meas_i, shots=shots)
+            counts_i = job_i.result().get_counts()
+            
+            # Create a new figure explicitly for each plot
+            fig_i = plt.figure(figsize=(8, 6))
+            hist_i = plot_histogram(counts_i, figsize=(8, 6))
+            all_figures.append(save_figure_to_data(hist_i, f'|i⟩ State measured in {basis}-basis'))
+            plt.close(hist_i)
+            plt.close(fig_i)
+        
+        # Store all the simulation data
+        store_simulation_data(lab_id, metrics=metrics, measurements=counts, figures=all_figures)
+        
+        # Debug: Confirm data was stored
+        st.success(f"✅ Stored {len(all_figures)} figures for report generation")
+        
+        # Close figures to free memory and prevent duplicates
+        plt.close(bloch_fig)
+        plt.close(hist_fig)
+        plt.close(circ_fig)
   
