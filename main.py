@@ -263,6 +263,14 @@ if st.session_state.view_mode != "welcome":
                     st.session_state.current_lab_section = "Learning Path"
                     st.session_state.view_mode = "home"
                     st.rerun()
+        
+        # If viewing technical documentation, show back button
+        elif st.session_state.view_mode == "documentation":
+            st.markdown("### 📚 Documentation")
+            st.markdown("---")
+            if st.button("← Back to Experiments", use_container_width=True, key="doc_back_btn"):
+                st.session_state.view_mode = "home"
+                st.rerun()
 
 # Main content area
 # Show welcome page first after login

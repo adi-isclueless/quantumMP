@@ -3,9 +3,6 @@ Technical Documentation for Quantum Playground
 """
 
 TECHNICAL_DOCUMENTATION = """
-# Quantum Playground Technical Documentation
-
-## 1. Architecture Overview
 
 ### System Architecture
 ```
