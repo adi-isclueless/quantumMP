@@ -267,7 +267,7 @@ def generate_certificate(lab_id_or_name: str, user_name: str = None, lab_config:
     draw.text(((width - clw) // 2, title_y + 350), cl, fill="black", font=FONT_TEXT)
 
     # Lab Name
-    lab_text = f"“{lab_config['title']}”"
+    lab_text = f'"{lab_config["title"]}"'    
     lw = draw.textlength(lab_text, font=FONT_TEXT)
     draw.text(((width - lw) // 2, title_y + 410), lab_text, fill="#5e35b1", font=FONT_TEXT)
 
