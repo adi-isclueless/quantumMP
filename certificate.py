@@ -160,7 +160,7 @@ def generate_certificate(lab_id_or_name: str, user_name: str = None, lab_config:
         user_name = st.session_state.get("user_name", "Student")
 
     # Canvas size
-    width, height = 1600, 1100
+    width, height = 600, 400
     image = Image.new('RGB', (width, height), color="#ffffff")
     draw = ImageDraw.Draw(image)
 
@@ -187,28 +187,7 @@ def generate_certificate(lab_id_or_name: str, user_name: str = None, lab_config:
     logo_y = 70
     image.paste(logo, (logo_x, logo_y), logo)
 
-    # ----------------------------
-    # Load Fonts (Stable Mirror)
-    # ----------------------------
-    import os
-    import urllib.request
-    
-    font_path = "Roboto-Regular.ttf"
-    
-    # Using a stable CDN link for Roboto
-    if not os.path.exists(font_path):
-        try:
-            # New stable URL
-            font_url = "https://github.com/googlefonts/roboto/raw/main/src/v2/Roboto-Regular.ttf"
-            
-            # Adding a User-Agent header to prevent some servers from blocking the download
-            opener = urllib.request.build_opener()
-            opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-            urllib.request.install_opener(opener)
-            
-            urllib.request.urlretrieve(font_url, font_path)
-        except Exception as e:
-            st.warning(f"Could not download font: {e}")
+    FONT_BOLD = FONT_NAME = FONT_TEXT = FONT_SMALL = ImageFont.load_default()
 
     # ----------------------------
     # Gold Border
