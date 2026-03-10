@@ -188,30 +188,27 @@ def generate_certificate(lab_id_or_name: str, user_name: str = None, lab_config:
     image.paste(logo, (logo_x, logo_y), logo)
 
     # ----------------------------
-    # Load Fonts (Dynamically Downloaded)
+    # Load Fonts (Stable Mirror)
     # ----------------------------
     import os
     import urllib.request
     
     font_path = "Roboto-Regular.ttf"
     
-    # If the font isn't on the server yet, download it from Google's open-source repo!
+    # Using a stable CDN link for Roboto
     if not os.path.exists(font_path):
         try:
-            font_url = "https://raw.githubusercontent.com/google/fonts/main/ofl/roboto/Roboto-Regular.ttf"
+            # New stable URL
+            font_url = "https://github.com/googlefonts/roboto/raw/main/src/v2/Roboto-Regular.ttf"
+            
+            # Adding a User-Agent header to prevent some servers from blocking the download
+            opener = urllib.request.build_opener()
+            opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+            urllib.request.install_opener(opener)
+            
             urllib.request.urlretrieve(font_url, font_path)
         except Exception as e:
             st.warning(f"Could not download font: {e}")
-    
-    # Load the newly downloaded font
-    try:
-        FONT_BOLD = ImageFont.truetype(font_path, 70)
-        FONT_NAME = ImageFont.truetype(font_path, 60)
-        FONT_TEXT = ImageFont.truetype(font_path, 38)
-        FONT_SMALL = ImageFont.truetype(font_path, 30)
-    except Exception:
-        # Absolute worst-case fallback
-        FONT_BOLD = FONT_NAME = FONT_TEXT = FONT_SMALL = ImageFont.load_default()
 
     # ----------------------------
     # Gold Border
