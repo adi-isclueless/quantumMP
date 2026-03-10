@@ -160,7 +160,7 @@ def generate_certificate(lab_id_or_name: str, user_name: str = None, lab_config:
         user_name = st.session_state.get("user_name", "Student")
 
     # Canvas size
-    width, height = 600, 400
+    width, height = 1600, 1100
     image = Image.new('RGB', (width, height), color="#ffffff")
     draw = ImageDraw.Draw(image)
 
@@ -187,8 +187,24 @@ def generate_certificate(lab_id_or_name: str, user_name: str = None, lab_config:
     logo_y = 70
     image.paste(logo, (logo_x, logo_y), logo)
 
-    FONT_BOLD = FONT_NAME = FONT_TEXT = FONT_SMALL = ImageFont.load_default()
+    import os
+    from PIL import ImageFont
 
+# Get the directory where certificate.py is located
+    current_dir = os.path.dirname(__file__)
+# Replace "Roboto-Regular.ttf" with the exact name of the file you uploaded
+    font_path = os.path.join(current_dir, "ARIAL.TTF")
+
+    try:
+    # Now you can finally set the sizes you want!
+        FONT_BOLD = ImageFont.truetype(font_path, 70)
+        FONT_NAME = ImageFont.truetype(font_path, 60)
+        FONT_TEXT = ImageFont.truetype(font_path, 38)
+        FONT_SMALL = ImageFont.truetype(font_path, 30)
+    except Exception as e:
+    # This only runs if the filename above is misspelled
+        st.error(f"Font file not found: {e}")
+        FONT_BOLD = FONT_NAME = FONT_TEXT = FONT_SMALL = ImageFont.load_default()
     # ----------------------------
     # Gold Border
     # ----------------------------
