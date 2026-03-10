@@ -188,26 +188,30 @@ def generate_certificate(lab_id_or_name: str, user_name: str = None, lab_config:
     image.paste(logo, (logo_x, logo_y), logo)
 
     # ----------------------------
-    # Load Fonts
+    # Load Fonts (Dynamically Downloaded)
     # ----------------------------
-    import platform
+    import os
+    import urllib.request
+    
+    font_path = "Roboto-Regular.ttf"
+    
+    # If the font isn't on the server yet, download it from Google's open-source repo!
+    if not os.path.exists(font_path):
+        try:
+            font_url = "https://raw.githubusercontent.com/google/fonts/main/ofl/roboto/Roboto-Regular.ttf"
+            urllib.request.urlretrieve(font_url, font_path)
+        except Exception as e:
+            st.warning(f"Could not download font: {e}")
+    
+    # Load the newly downloaded font
     try:
-        if platform.system() == "Windows":
-            font_path = "C:/Windows/Fonts/arial.ttf"
-        elif platform.system() == "Darwin":
-            font_path = "/Library/Fonts/Arial.ttf"
-        else:
-            font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-
         FONT_BOLD = ImageFont.truetype(font_path, 70)
         FONT_NAME = ImageFont.truetype(font_path, 60)
         FONT_TEXT = ImageFont.truetype(font_path, 38)
         FONT_SMALL = ImageFont.truetype(font_path, 30)
-    except:
-        FONT_BOLD = ImageFont.load_default()
-        FONT_NAME = ImageFont.load_default()
-        FONT_TEXT = ImageFont.load_default()
-        FONT_SMALL = ImageFont.load_default()
+    except Exception:
+        # Absolute worst-case fallback
+        FONT_BOLD = FONT_NAME = FONT_TEXT = FONT_SMALL = ImageFont.load_default()
 
     # ----------------------------
     # Gold Border
